@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Piezas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #1a1a1a;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-info h1 {
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .header-info h1::before {
+            content: "🧩";
+            font-size: 1.2em;
+        }
+
+        .header-info p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-secondary::before {
+            content: "←";
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-primary::before {
+            content: "➕";
+        }
+
+        .piezas-container {
+            background: #2a2a2a;
+            color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .piezas-header {
+            background: #000000;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .piezas-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .piezas-table th,
+        .piezas-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .piezas-table th {
+            background: #000000;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .piezas-table tr:hover {
+            background: #494949;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state::before {
+            content: "📋";
+            font-size: 4em;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .form-header {
+            background: #2a2a2a;
+            color: white;
+            padding: 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-section {
+            padding: 25px;
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #fcfcfc;
+        }
+
+        label.required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: 2px dashed #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .file-upload-label:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .file-upload-label::before {
+            content: "📎";
+            font-size: 1.2em;
+        }
+
+        .file-list {
+            margin-top: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .file-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            padding: 25px;
+            background: #2a2a2a;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: #6c757d;
+            padding: 12px 24px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            border-color: #6c757d;
+            color: #495057;
+        }
+
+        .btn-save {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            background: #218838;
+        }
+
+        .btn-save::before {
+            content: "💾";
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-edit-pieza {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-edit-pieza:hover {
+            background: #e0a800;
+        }
+
+        .btn-delete-pieza {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete-pieza:hover {
+            background: #c82333;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .piezas-table {
+                font-size: 14px;
+            }
+
+            .piezas-table th,
+            .piezas-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-info">
+                <h1>Gestión de Piezas</h1>
+                <p id="campaign-name">Campaña: Cargando...</p>
+            </div>
+            <div class="header-actions">
+                <a href="campanas.html" class="btn-secondary">Volver al Dashboard</a>
+                <button class="btn-primary" onclick="mostrarFormulario()">Nueva Pieza</button>
+            </div>
+        </div>
+
+        <!-- Lista de Piezas -->
+        <div class="piezas-container">
+            <div class="piezas-header">
+                <span>Piezas de la Campaña</span>
+                <span id="piezas-count">0 piezas</span>
+            </div>
+            
+            <div id="empty-state" class="empty-state">
+                <h3>No hay piezas creadas</h3>
+                <p>Comenzá creando la primera pieza para esta campaña</p>
+            </div>
+
+            <table id="piezas-table" class="piezas-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Tipo de Pieza</th>
+                        <th>Asunto</th>
+                        <th>Fecha Creación</th>
+                        <th>Archivos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="piezas-body">
+                    <!-- Las piezas se cargan dinámicamente aquí -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formulario de Nueva Pieza -->
+        <div id="form-container" class="form-container">
+            <div class="form-header">
+                <span id="form-title">Nueva Pieza</span>
+                <button type="button" onclick="ocultarFormulario()">✕</button>
+            </div>
+
+            <form id="pieza-form">
+                <div id="error-message" class="error-message"></div>
+                <div id="success-message" class="success-message"></div>
+
+                <div class="form-section">
+                    <div class="form-grid">
+                        
+                        <div class="form-group full-width" style="text-align: center;">
+                            <label for="campana" class="required">Campaña</label>
+                            <input type="text" id="campana" name="campana" readonly style="text-align: center;">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="primer-mensaje-linkedin">Primer mensaje LinkedIn</label>
+                            <textarea id="primer-mensaje-linkedin" name="primerMensajeLinkedin" placeholder="Contenido del primer mensaje de LinkedIn"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="follow-up-linkedin">Segundo mensaje LinkedIn</label>
+                            <textarea id="follow-up-linkedin" name="followUpLinkedin" placeholder="Contenido del follow-up de LinkedIn"></textarea>
+                        </div>
+
+                        <!-- Sección Comunicaciones -->
+                        <div class="form-group full-width">
+                            <label for="lhln-selector">Comunicaciones</label>
+                            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                                <select id="lhln-selector" style="flex: 1;">
+                                    <option value="">Seleccionar comunicación para agregar</option>
+                                    <option value="1er Mail">1er Mail</option>
+                                    <option value="2ndo Mail">2ndo Mail</option>
+                                    <option value="LHLN1">LHLN1</option>
+                                    <option value="LHLN2">LHLN2</option>
+                                    <option value="LHLN3">LHLN3</option>
+                                    <option value="LHLN4">LHLN4</option>
+                                    <option value="LHLN5">LHLN5</option>
+                                    <option value="LHLN6">LHLN6</option>
+                                    <option value="LHLN7">LHLN7</option>
+                                    <option value="LHLN8">LHLN8</option>
+                                    <option value="LHLN9">LHLN9</option>
+                                    <option value="LHLN10">LHLN10</option>
+                                    <option value="LHLN11">LHLN11</option>
+                                    <option value="LHLN12">LHLN12</option>
+                                </select>
+                                <button type="button" onclick="agregarComunicacion()" style="background: #4a9eff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">
+                                    Agregar Comunicación
+                                </button>
+                            </div>
+                            
+                            <div id="lhln-comunicaciones">
+                                <!-- Las comunicaciones se agregan aquí dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn-cancel" onclick="ocultarFormulario()">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar Pieza</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Estado del webhook -->
+    <div id="webhook-status" class="webhook-status"></div>
+
+    <script>
+        // Configuración - REEMPLAZA CON TU URL DE N8N
+        const N8N_WEBHOOK_URL = 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-save-pieces';
+        const N8N_FILES_WEBHOOK_URL = 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-save-files';
+        const N8N_LOAD_PIECES_WEBHOOK_URL = 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-load-pieces';
+        
+        // Variables globales
+        let piezas = [];
+        let campaignId = null;
+        let campaignName = '';
+        let editingPiezaId = null;
+        let comunicacionesLHLN = [];
+        let lhlnCounter = 0;
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener información de la campaña desde URL
+            const urlParams = new URLSearchParams(window.location.search);
+            campaignId = urlParams.get('campaña');
+            campaignName = urlParams.get('nombre') || 'Sin nombre';
+            
+            // Establecer el nombre de la campaña
+            document.getElementById('campaign-name').textContent = `Campaña: ${campaignName}`;
+            document.getElementById('campana').value = campaignName;
+            
+            // Cargar piezas existentes
+            cargarPiezas();
+        });
+
+        // Función para cargar piezas
+        async function cargarPiezas() {
+            try {
+                console.log('Cargando piezas desde webhook...');
+                await cargarPiezasDesdeWebhook();
+                mostrarPiezas();
+            } catch (error) {
+                console.error('Error al cargar piezas:', error);
+                mostrarError('Error al cargar las piezas');
+                // Fallback a datos simulados si falla
+                await simularCargaPiezas();
+                mostrarPiezas();
+            }
+        }
+
+        // Función para cargar piezas desde webhook
+        async function cargarPiezasDesdeWebhook() {
+            try {
+                console.log('Solicitando piezas al webhook:', N8N_LOAD_PIECES_WEBHOOK_URL);
+                
+                // Enviar información de la campaña al webhook
+                const response = await fetch(N8N_LOAD_PIECES_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        campaignId: campaignId,
+                        campana: campaignName
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Piezas recibidas del webhook:', data);
+
+                // Verificar si hay piezas en la respuesta
+                if (data && Array.isArray(data)) {
+                    // Los datos llegan directamente como array de piezas
+                    piezas = data.map(pieza => ({
+                        id: pieza.id,
+                        tipoPieza: pieza.type || 'LHLN',
+                        asunto: pieza.asunto || 'Sin asunto',
+                        fechaCreacion: pieza.created ? pieza.created.split('T')[0] : new Date().toISOString().split('T')[0],
+                        archivos: 0, // Los archivos se contarán por separado
+                        comunicacionesLHLN: [] // Se llenará cuando se edite
+                    }));
+                    
+                    console.log(`✅ ${piezas.length} piezas cargadas exitosamente`);
+                } else if (data && data.piezas && Array.isArray(data.piezas)) {
+                    // Formato alternativo si vienen envueltas en objeto
+                    piezas = data.piezas.map(pieza => ({
+                        id: pieza.id,
+                        tipoPieza: pieza.type || 'LHLN',
+                        asunto: pieza.asunto || 'Sin asunto',
+                        fechaCreacion: pieza.created ? pieza.created.split('T')[0] : new Date().toISOString().split('T')[0],
+                        archivos: 0,
+                        comunicacionesLHLN: []
+                    }));
+                    
+                    console.log(`✅ ${piezas.length} piezas cargadas exitosamente`);
+                } else {
+                    console.log('No se encontraron piezas o respuesta vacía');
+                    piezas = [];
+                }
+
+            } catch (error) {
+                console.error('Error al cargar piezas desde webhook:', error);
+                throw error;
+            }
+        }
+
+        // Simular carga de piezas (temporal)
+        function simularCargaPiezas() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    piezas = [
+                        {
+                            id: 1,
+                            tipoPieza: 'LHLN1',
+                            cliente: 'Cliente ABC',
+                            campana: campaignName,
+                            fechaCreacion: '2025-07-29',
+                            archivos: 2
+                        },
+                        {
+                            id: 2,
+                            tipoPieza: 'LHLN2',
+                            cliente: 'E-commerce XYZ',
+                            campana: campaignName,
+                            fechaCreacion: '2025-07-28',
+                            archivos: 1
+                        }
+                    ];
+                    resolve();
+                }, 500);
+            });
+        }
+
+        // Función para mostrar piezas
+        function mostrarPiezas() {
+            const emptyState = document.getElementById('empty-state');
+            const table = document.getElementById('piezas-table');
+            const tbody = document.getElementById('piezas-body');
+            const countElement = document.getElementById('piezas-count');
+
+            countElement.textContent = `${piezas.length} pieza${piezas.length !== 1 ? 's' : ''}`;
+
+            if (piezas.length === 0) {
+                emptyState.style.display = 'block';
+                table.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            table.style.display = 'table';
+
+            tbody.innerHTML = piezas.map(pieza => `
+                <tr>
+                    <td><strong>${pieza.tipoPieza}</strong></td>
+                    <td>${pieza.asunto || 'Sin asunto'}</td>
+                    <td>${formatearFecha(pieza.fechaCreacion)}</td>
+                    <td>
+                        <span style="background: #e9ecef; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #333;">
+                            ${pieza.archivos} archivos
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="btn-small btn-edit-pieza" onclick="editarPieza(${pieza.id})">
+                                Editar
+                            </button>
+                            <button class="btn-small btn-delete-pieza" onclick="eliminarPieza(${pieza.id})">
+                                Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Función para mostrar el formulario
+        function mostrarFormulario() {
+            editingPiezaId = null;
+            document.getElementById('form-title').textContent = 'Nueva Pieza';
+            document.getElementById('pieza-form').reset();
+            document.getElementById('campana').value = campaignName;
+            comunicacionesLHLN = [];
+            limpiarComunicaciones();
+            document.getElementById('form-container').classList.add('active');
+            window.scrollTo({ top: document.getElementById('form-container').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        // Función para ocultar el formulario
+        function ocultarFormulario() {
+            document.getElementById('form-container').classList.remove('active');
+            limpiarMensajes();
+        }
+
+        // Función para limpiar comunicaciones
+        function limpiarComunicaciones() {
+            document.getElementById('lhln-comunicaciones').innerHTML = '';
+            comunicacionesLHLN = [];
+            lhlnCounter = 0;
+        }
+
+        // Función para agregar comunicación
+        function agregarComunicacion() {
+            const selector = document.getElementById('lhln-selector');
+            const tipoLHLN = selector.value;
+            
+            if (!tipoLHLN) {
+                alert('Por favor, selecciona un tipo de comunicación');
+                return;
+            }
+            
+            // Verificar si ya existe esta comunicación
+            if (comunicacionesLHLN.find(c => c.tipo === tipoLHLN)) {
+                alert('Ya existe una comunicación para este tipo');
+                return;
+            }
+            
+            lhlnCounter++;
+            const comunicacionId = `lhln-${lhlnCounter}`;
+            
+            const comunicacionHtml = `
+                <div class="comunicacion-lhln" id="${comunicacionId}" style="background: #404040; border: 1px solid #555555; padding: 20px; margin-bottom: 15px; border-radius: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #555555; padding-bottom: 10px;">
+                        <span style="font-weight: 600; color: #ffffff; font-size: 14px;">${tipoLHLN}</span>
+                        <button type="button" onclick="eliminarComunicacion('${comunicacionId}', '${tipoLHLN}')" style="background: #666666; color: #cccccc; border: 1px solid #777777; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Eliminar
+                        </button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-weight: 500; margin-bottom: 8px; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Asunto</label>
+                            <input type="text" name="lhln-asunto-${lhlnCounter}" placeholder="Asunto del email" style="padding: 12px; border: 1px solid #555555; border-radius: 4px; font-size: 14px; background: #2a2a2a; color: #ffffff;">
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-weight: 500; margin-bottom: 8px; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Cuerpo del Mail</label>
+                            <textarea name="lhln-cuerpo-${lhlnCounter}" placeholder="Contenido del email" style="padding: 12px; border: 1px solid #555555; border-radius: 4px; font-size: 14px; background: #2a2a2a; color: #ffffff; min-height: 80px; resize: vertical;"></textarea>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-weight: 500; margin-bottom: 8px; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Adjuntar Brochure</label>
+                            <div class="file-upload">
+                                <input type="file" id="lhln-brochure-${lhlnCounter}" multiple accept=".pdf,.doc,.docx,.jpg,.png">
+                                <label for="lhln-brochure-${lhlnCounter}" class="file-upload-label" style="background: #2a2a2a; border: 1px dashed #666666; color: #cccccc; padding: 12px; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    + Seleccionar Brochures
+                                </label>
+                            </div>
+                            <div id="lhln-brochure-files-${lhlnCounter}" class="file-list"></div>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-weight: 500; margin-bottom: 8px; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Adjuntar Flyer</label>
+                            <div class="file-upload">
+                                <input type="file" id="lhln-flyer-${lhlnCounter}" multiple accept=".pdf,.doc,.docx,.jpg,.png">
+                                <label for="lhln-flyer-${lhlnCounter}" class="file-upload-label" style="background: #2a2a2a; border: 1px dashed #666666; color: #cccccc; padding: 12px; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    + Seleccionar Flyers
+                                </label>
+                            </div>
+                            <div id="lhln-flyer-files-${lhlnCounter}" class="file-list"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('lhln-comunicaciones').insertAdjacentHTML('beforeend', comunicacionHtml);
+            
+            // Agregar a la lista de comunicaciones
+            comunicacionesLHLN.push({
+                id: comunicacionId,
+                tipo: tipoLHLN,
+                counter: lhlnCounter,
+                brochureFiles: [],
+                flyerFiles: [],
+                archivos: []
+            });
+            
+            // Configurar manejadores de archivos para esta comunicación
+            configurarManejadoresLHLN(lhlnCounter, tipoLHLN);
+            
+            // Resetear selector
+            selector.value = '';
+        }
+
+        // Función para eliminar comunicación
+        function eliminarComunicacion(comunicacionId, tipoLHLN) {
+            if (confirm(`¿Estás seguro de que querés eliminar la comunicación ${tipoLHLN}?`)) {
+                document.getElementById(comunicacionId).remove();
+                comunicacionesLHLN = comunicacionesLHLN.filter(c => c.id !== comunicacionId);
+            }
+        }
+
+        // Función para configurar manejadores de archivos LHLN
+        function configurarManejadoresLHLN(counter, tipo) {
+            const brochureInput = document.getElementById(`lhln-brochure-${counter}`);
+            const flyerInput = document.getElementById(`lhln-flyer-${counter}`);
+            
+            if (brochureInput) {
+                brochureInput.addEventListener('change', function(e) {
+                    manejarArchivosLHLN(e.target.files, 'brochure', counter);
+                });
+            }
+            
+            if (flyerInput) {
+                flyerInput.addEventListener('change', function(e) {
+                    manejarArchivosLHLN(e.target.files, 'flyer', counter);
+                });
+            }
+        }
+
+        // Función para manejar archivos LHLN
+        function manejarArchivosLHLN(files, tipo, counter) {
+            const filesArray = Array.from(files);
+            const comunicacion = comunicacionesLHLN.find(c => c.counter === counter);
+            
+            if (comunicacion) {
+                if (tipo === 'brochure') {
+                    comunicacion.brochureFiles = [...comunicacion.brochureFiles, ...filesArray];
+                } else if (tipo === 'flyer') {
+                    comunicacion.flyerFiles = [...comunicacion.flyerFiles, ...filesArray];
+                }
+                
+                actualizarListaArchivosLHLN(counter);
+            }
+        }
+
+        // Función para actualizar lista de archivos LHLN
+        function actualizarListaArchivosLHLN(counter) {
+            const comunicacion = comunicacionesLHLN.find(c => c.counter === counter);
+            if (!comunicacion) return;
+            
+            // Actualizar brochures
+            const brochureContainer = document.getElementById(`lhln-brochure-files-${counter}`);
+            if (brochureContainer && comunicacion.brochureFiles) {
+                brochureContainer.innerHTML = comunicacion.brochureFiles.map((file, index) => `
+                    <div class="file-item" style="background: #555555; color: #ffffff;">
+                        <span>${file.name}</span>
+                        <button type="button" onclick="eliminarArchivoLHLN('brochure', ${counter}, ${index})" class="file-remove">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            // Actualizar flyers
+            const flyerContainer = document.getElementById(`lhln-flyer-files-${counter}`);
+            if (flyerContainer && comunicacion.flyerFiles) {
+                flyerContainer.innerHTML = comunicacion.flyerFiles.map((file, index) => `
+                    <div class="file-item" style="background: #555555; color: #ffffff;">
+                        <span>${file.name}</span>
+                        <button type="button" onclick="eliminarArchivoLHLN('flyer', ${counter}, ${index})" class="file-remove">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Función para eliminar archivo LHLN
+        function eliminarArchivoLHLN(tipo, counter, index) {
+            const comunicacion = comunicacionesLHLN.find(c => c.counter === counter);
+            if (!comunicacion) return;
+            
+            if (tipo === 'brochure') {
+                comunicacion.brochureFiles.splice(index, 1);
+            } else if (tipo === 'flyer') {
+                comunicacion.flyerFiles.splice(index, 1);
+            }
+            
+            actualizarListaArchivosLHLN(counter);
+        }
+
+        // Función para manejar el envío del formulario
+        document.getElementById('pieza-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const piezaData = recopilarDatosPieza();
+            await guardarPiezaYEnviarTodas(piezaData);
+        });
+
+        // Función para recopilar datos de la pieza
+        function recopilarDatosPieza() {
+            const formData = new FormData(document.getElementById('pieza-form'));
+            debugger;
+            
+            // Array para almacenar todos los archivos
+            let todosLosArchivos = [];
+            
+            // Recopilar datos de comunicaciones LHLN
+            const comunicacionesData = comunicacionesLHLN.map(comunicacion => {
+                const data = {
+                    tipo: comunicacion.tipo,
+                    brochureFiles: comunicacion.brochureFiles ? comunicacion.brochureFiles.map(f => f.name) : [],
+                    flyerFiles: comunicacion.flyerFiles ? comunicacion.flyerFiles.map(f => f.name) : [],
+                    archivos: comunicacion.archivos ? comunicacion.archivos.map(f => f.name) : []
+                };
+                
+                // Agregar archivos al array principal
+                if (comunicacion.brochureFiles) {
+                    todosLosArchivos = todosLosArchivos.concat(comunicacion.brochureFiles);
+                }
+                if (comunicacion.flyerFiles) {
+                    todosLosArchivos = todosLosArchivos.concat(comunicacion.flyerFiles);
+                }
+                if (comunicacion.archivos) {
+                    todosLosArchivos = todosLosArchivos.concat(comunicacion.archivos);
+                }
+                
+                // Agregar asunto y cuerpo
+                data.asunto = formData.get(`lhln-asunto-${comunicacion.counter}`) || '';
+                data.cuerpo = formData.get(`lhln-cuerpo-${comunicacion.counter}`) || '';
+                
+                return data;
+            });
+            
+            var data = {
+                tipo: "firstLinkedln",
+                cuerpo: formData.get('primerMensajeLinkedin')
+            };
+            comunicacionesData.push(data);
+            var data = {
+                tipo: "secondLinkedln",
+                cuerpo: formData.get('followUpLinkedin')
+            };
+            comunicacionesData.push(data);
+            
+            return {
+                id: editingPiezaId || Date.now(),
+                campana: formData.get('campana'),
+                comunicacionesLHLN: comunicacionesData,
+                archivos: todosLosArchivos, // Incluir todos los archivos
+                fechaCreacion: new Date().toISOString().split('T')[0],
+                campaignId: campaignId
+            };
+        }
+
+        // Función para obtener la extensión de un archivo
+        function obtenerExtensionArchivo(archivo) {
+            if (!archivo || !archivo.name) {
+                console.warn('Archivo o nombre de archivo undefined:', archivo);
+                return '';
+            }
+            const nombre = archivo.name;
+            const ultimoPunto = nombre.lastIndexOf('.');
+            return ultimoPunto !== -1 ? nombre.substring(ultimoPunto) : '';
+        }
+
+        // Función para limpiar texto para usar en nombres de archivo
+        function limpiarTextoParaNombre(texto) {
+            if (!texto) return 'sin_asunto';
+            return texto
+                .replace(/[^a-zA-Z0-9\u00C0-\u017F\s]/g, '') // Remover caracteres especiales excepto letras, números y espacios
+                .replace(/\s+/g, '_') // Reemplazar espacios con guiones bajos
+                .toLowerCase()
+                .substring(0, 50); // Limitar longitud
+        }
+
+        // Función para enviar TODOS los archivos juntos al webhook de archivos
+        async function enviarTodosLosArchivosJuntos(piezaData) {
+            try {
+                console.log('Enviando todos los archivos juntos...');
+                
+                // Crear FormData para todos los archivos
+                const formData = new FormData();
+                
+                // Agregar metadatos básicos de la pieza
+                formData.append('piezaId', piezaData.id);
+                formData.append('campana', piezaData.campana);
+                formData.append('campaignId', piezaData.campaignId);
+                
+                let contadorArchivos = 0;
+                
+                // Enviar directamente todos los archivos del array piezaData.archivos
+                if (piezaData.archivos && piezaData.archivos.length > 0) {
+                    for (const archivo of piezaData.archivos) {
+                        if (archivo && archivo.name) {
+                            const extension = obtenerExtensionArchivo(archivo);
+                            const nuevoNombre = `archivo_${contadorArchivos}${extension}`;
+                            formData.append(`archivo_${contadorArchivos}`, archivo, nuevoNombre);
+                            contadorArchivos++;
+                        }
+                    }
+                }
+                
+                if (contadorArchivos === 0) {
+                    console.log('No hay archivos válidos para enviar');
+                    return;
+                }
+                
+                console.log(`Enviando ${contadorArchivos} archivos juntos al webhook de archivos`);
+                
+                // Enviar todos los archivos juntos
+                const response = await fetch(N8N_FILES_WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error al enviar archivos: ${response.status} - ${response.statusText}`);
+                }
+                
+                const resultado = await response.json();
+                console.log(`✅ ${contadorArchivos} archivos enviados exitosamente:`, resultado);
+                
+            } catch (error) {
+                console.error('Error al enviar archivos juntos:', error);
+                throw error;
+            }
+        }
+
+        // Función para enviar archivos por separado al webhook de archivos
+        async function enviarArchivosPorSeparado(piezaData) {
+            try {
+                console.log('Enviando archivos por separado...');
+                
+                // Recorrer comunicaciones para obtener archivos con contexto
+                for (const comunicacion of piezaData.comunicacionesLHLN) {
+                    if (!comunicacion.tipo) continue;
+                    
+                    // Obtener asunto limpio para el nombre del archivo
+                    const asuntoLimpio = limpiarTextoParaNombre(comunicacion.asunto);
+                    
+                    // Enviar brochures
+                    if (comunicacion.brochureFiles && comunicacion.brochureFiles.length > 0) {
+                        for (const archivo of comunicacion.brochureFiles) {
+                            const extension = obtenerExtensionArchivo(archivo);
+                            const nuevoNombre = `${comunicacion.tipo}_brochure_${asuntoLimpio}${extension}`;
+                            await enviarArchivoIndividual(archivo, nuevoNombre, piezaData);
+                        }
+                    }
+                    
+                    // Enviar flyers
+                    if (comunicacion.flyerFiles && comunicacion.flyerFiles.length > 0) {
+                        for (const archivo of comunicacion.flyerFiles) {
+                            const extension = obtenerExtensionArchivo(archivo);
+                            const nuevoNombre = `${comunicacion.tipo}_flyer_${asuntoLimpio}${extension}`;
+                            await enviarArchivoIndividual(archivo, nuevoNombre, piezaData);
+                        }
+                    }
+                    
+                    // Enviar otros archivos si los hay
+                    if (comunicacion.archivos && comunicacion.archivos.length > 0) {
+                        for (const archivo of comunicacion.archivos) {
+                            const extension = obtenerExtensionArchivo(archivo);
+                            const nuevoNombre = `${comunicacion.tipo}_archivo_${asuntoLimpio}${extension}`;
+                            await enviarArchivoIndividual(archivo, nuevoNombre, piezaData);
+                        }
+                    }
+                }
+                
+                console.log('Todos los archivos enviados exitosamente');
+                
+            } catch (error) {
+                console.error('Error al enviar archivos:', error);
+                throw error;
+            }
+        }
+
+        // Función para enviar un archivo individual al webhook de archivos
+        async function enviarArchivoIndividual(archivo, nuevoNombre, piezaData) {
+            const formData = new FormData();
+            
+            // Crear un nuevo archivo con el nombre personalizado
+            const archivoRenombrado = new File([archivo], nuevoNombre, { type: archivo.type });
+            
+            formData.append('archivo', archivoRenombrado);
+            formData.append('metadata', JSON.stringify({
+                piezaId: piezaData.id,
+                campana: piezaData.campana,
+                campaignId: piezaData.campaignId,
+                nombreOriginal: archivo.name,
+                nombreNuevo: nuevoNombre,
+                fechaSubida: new Date().toISOString()
+            }));
+            
+            console.log(`Enviando archivo: ${nuevoNombre}`);
+            
+            const response = await fetch(N8N_FILES_WEBHOOK_URL, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Error al enviar archivo ${nuevoNombre}: ${response.status} - ${response.statusText}`);
+            }
+            
+            const resultado = await response.json();
+            console.log(`Archivo ${nuevoNombre} enviado exitosamente:`, resultado);
+        }
+
+        // FUNCIÓN PRINCIPAL: Guardar pieza y enviar solo la nueva pieza a N8N
+        async function guardarPiezaYEnviarTodas(piezaData) {
+            try {
+                // Mostrar estado de carga
+                mostrarEstadoWebhook('Guardando pieza y enviando datos...', 'loading');
+                
+                // Preparar los datos adicionales de la pieza
+                const totalArchivos = piezaData.archivos ? piezaData.archivos.length : 0;
+                piezaData.totalArchivos = totalArchivos;
+                piezaData.tipoPieza = obtenerTipoPiezaPrincipal(piezaData.comunicacionesLHLN);
+                
+                // Determinar si es nueva pieza o actualización
+                const esNuevaPieza = !editingPiezaId;
+                
+                // Agregar o actualizar la pieza en la lista local
+                let piezaParaMostrar = {
+                    ...piezaData,
+                    archivos: totalArchivos // Para mostrar en la tabla
+                };
+                
+                if (editingPiezaId) {
+                    // Actualizar pieza existente
+                    const index = piezas.findIndex(p => p.id === editingPiezaId);
+                    if (index !== -1) {
+                        piezas[index] = piezaParaMostrar;
+                    }
+                } else {
+                    // Agregar nueva pieza
+                    piezas.push(piezaParaMostrar);
+                }
+
+                // Preparar datos para enviar SOLO la pieza nueva/modificada a N8N (sin archivos)
+                const dataParaN8N = {
+                    pieza: {
+                        id: piezaData.id,
+                        campana: piezaData.campana,
+                        comunicacionesLHLN: piezaData.comunicacionesLHLN || [],
+                        fechaCreacion: piezaData.fechaCreacion,
+                        campaignId: piezaData.campaignId,
+                        tipoPieza: piezaData.tipoPieza,
+                        totalArchivos: totalArchivos,
+                        esNuevaPieza: esNuevaPieza
+                    }
+                };
+
+                console.log('Enviando pieza nueva/modificada a N8N:', dataParaN8N);
+                console.log('Total de archivos a enviar por separado:', totalArchivos);
+
+                // Enviar datos de la pieza (sin archivos) al webhook principal
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(dataParaN8N)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                }
+
+                const resultado = await response.json();
+                console.log('Respuesta de N8N:', resultado);
+                debugger;
+                // Verificar archivos disponibles
+                console.log('Verificando archivos para envío:');
+                console.log('piezaData.archivos:', piezaData.archivos);
+                console.log('Total archivos:', piezaData.archivos ? piezaData.archivos.length : 0);
+                
+                // Enviar TODOS los archivos juntos si los hay
+                if (piezaData.archivos && piezaData.archivos.length > 0) {
+                    console.log('Enviando archivos al webhook de archivos...');
+                    await enviarTodosLosArchivosJuntos(piezaData);
+                } else {
+                    console.log('No hay archivos para enviar o array vacío');
+                }
+
+                // Mostrar éxito
+                mostrarEstadoWebhook('✅ Datos y archivos enviados exitosamente a N8N', 'success');
+                mostrarExito(esNuevaPieza ? 
+                    `Nueva pieza guardada y enviada a N8N (${totalArchivos} archivos). Total de piezas: ${piezas.length}` :
+                    `Pieza actualizada y enviada a N8N (${totalArchivos} archivos).`
+                );
+                
+                // Actualizar la vista
+                mostrarPiezas();
+                ocultarFormulario();
+
+            } catch (error) {
+                console.error('Error al enviar datos a N8N:', error);
+                mostrarEstadoWebhook('❌ Error al enviar datos a N8N', 'error');
+                mostrarError(`Error al enviar datos: ${error.message}`);
+            }
+        }
+
+        // Función para mostrar estado del webhook
+        function mostrarEstadoWebhook(mensaje, tipo) {
+            const statusDiv = document.getElementById('webhook-status');
+            statusDiv.textContent = mensaje;
+            statusDiv.className = `webhook-status ${tipo}`;
+            statusDiv.style.display = 'block';
+
+            if (tipo !== 'loading') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Función para calcular total de archivos
+        function calcularTotalArchivos(comunicaciones) {
+            let total = 0;
+            comunicaciones.forEach(com => {
+                total += com.brochureFiles ? com.brochureFiles.length : 0;
+                total += com.flyerFiles ? com.flyerFiles.length : 0;
+                total += com.archivos ? com.archivos.length : 0;
+            });
+            return total;
+        }
+
+        // Función para obtener tipo de pieza principal
+        function obtenerTipoPiezaPrincipal(comunicaciones) {
+            if (comunicaciones.length === 0) return 'Sin comunicaciones';
+            
+            // Priorizar LHLN, luego emails, luego archivos
+            const lhln = comunicaciones.find(c => c.tipo.startsWith('LHLN'));
+            if (lhln) return lhln.tipo;
+            
+            const email = comunicaciones.find(c => c.tipo.includes('Mail'));
+            if (email) return email.tipo;
+            
+            return comunicaciones[0].tipo;
+        }
+
+        // Función para editar pieza
+        function editarPieza(id) {
+            const pieza = piezas.find(p => p.id === id);
+            if (!pieza) return;
+            
+            editingPiezaId = id;
+            document.getElementById('form-title').textContent = 'Editar Pieza';
+            
+            // Llenar el formulario con los datos existentes
+            document.getElementById('campana').value = pieza.campana || '';
+            document.getElementById('primer-mensaje-linkedin').value = pieza.primerMensajeLinkedin || '';
+            document.getElementById('follow-up-linkedin').value = pieza.followUpLinkedin || '';
+            
+            // Limpiar y recrear comunicaciones
+            limpiarComunicaciones();
+            
+            // Recrear comunicaciones existentes
+            if (pieza.comunicacionesLHLN && pieza.comunicacionesLHLN.length > 0) {
+                pieza.comunicacionesLHLN.forEach(comunicacion => {
+                    // Simular agregar comunicación
+                    document.getElementById('lhln-selector').value = comunicacion.tipo;
+                    agregarComunicacion();
+                    
+                    // Llenar datos
+                    const currentCounter = lhlnCounter;
+                    if (comunicacion.asunto) {
+                        document.querySelector(`input[name="lhln-asunto-${currentCounter}"]`).value = comunicacion.asunto;
+                    }
+                    if (comunicacion.cuerpo) {
+                        document.querySelector(`textarea[name="lhln-cuerpo-${currentCounter}"]`).value = comunicacion.cuerpo;
+                    }
+                });
+            }
+            
+            document.getElementById('form-container').classList.add('active');
+            window.scrollTo({ top: document.getElementById('form-container').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        // Función para eliminar pieza
+        function eliminarPieza(id) {
+            const pieza = piezas.find(p => p.id === id);
+            if (!pieza) return;
+            
+            if (confirm(`¿Estás seguro de que querés eliminar la pieza "${pieza.tipoPieza}"?`)) {
+                piezas = piezas.filter(p => p.id !== id);
+                mostrarPiezas();
+                mostrarExito('Pieza eliminada exitosamente');
+            }
+        }
+
+        // Función para formatear fecha
+        function formatearFecha(fecha) {
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-AR', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Funciones de UI
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = mensaje;
+            errorDiv.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+            
+            // Scroll to form
+            window.scrollTo({ top: document.getElementById('form-container').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        function mostrarExito(mensaje) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = mensaje;
+            successDiv.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            
+            // Ocultar mensaje después de 5 segundos
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function limpiarMensajes() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
