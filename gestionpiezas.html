@@ -3,8 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Piezas</title>
+    <title>Gestión de Piezas v6</title>
     <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2a2a2a;
+            --bg-tertiary: #404040;
+            --text-primary: #ffffff;
+            --text-secondary: #7f8c8d;
+            --text-muted: #cccccc;
+            --border-color: #555555;
+            --accent-blue: #3498db;
+            --accent-green: #28a745;
+            --accent-yellow: #ffc107;
+            --accent-red: #dc3545;
+            --accent-cyan: #17a2b8;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,143 +27,220 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: #1a1a1a;
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        .header {
+        /* Header Styles */
+        .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            background: #2a2a2a;
+            background: var(--bg-secondary);
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
         .header-info h1 {
-            color: #ffffff;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 5px;
+            font-size: 1.8rem;
         }
 
         .header-info h1::before {
             content: "🧩";
-            font-size: 1.2em;
+            font-size: 1.3em;
         }
 
         .header-info p {
-            color: #7f8c8d;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 10px;
+        .version-badge {
+            background: var(--accent-blue);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        /* Button Styles */
+        .btn {
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+            padding: 12px 20px;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
             background: #6c757d;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.3s;
+            padding: 12px 20px;
         }
 
         .btn-secondary:hover {
             background: #5a6268;
         }
 
-        .btn-secondary::before {
-            content: "←";
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+            padding: 12px 24px;
         }
 
-        .btn-primary {
-            background: #3498db;
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: var(--accent-yellow);
+            color: #212529;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.3s;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 12px 24px;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-cancel:hover {
+            border-color: #6c757d;
+            color: #495057;
+        }
+
+        /* Loading and Status */
+        .loading {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .btn-primary:hover {
-            background: #2980b9;
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: var(--accent-blue);
+            animation: spin 1s ease-in-out infinite;
         }
 
-        .btn-primary::before {
-            content: "➕";
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .piezas-container {
-            background: #2a2a2a;
-            color: #ffffff;
+        .status-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 16px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            z-index: 1000;
+            min-width: 250px;
+        }
+
+        .status-loading { background: var(--accent-cyan); color: white; }
+        .status-success { background: var(--accent-green); color: white; }
+        .status-error { background: var(--accent-red); color: white; }
+
+        /* Table Styles */
+        .data-table-container {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             overflow: hidden;
             margin-bottom: 30px;
         }
 
-        .piezas-header {
-            background: #000000;
+        .table-header {
+            background: #000;
             color: white;
-            padding: 15px 20px;
+            padding: 16px 20px;
             font-weight: 600;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .piezas-table {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .piezas-table th,
-        .piezas-table td {
-            padding: 15px 20px;
+        .data-table th,
+        .data-table td {
+            padding: 16px 20px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .piezas-table th {
-            background: #000000;
+        .data-table th {
+            background: #000;
             font-weight: 600;
-            color: #ffffff;
+            color: var(--text-primary);
         }
 
-        .piezas-table tr:hover {
-            background: #494949;
+        .data-table tr:hover {
+            background: var(--bg-tertiary);
         }
 
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #7f8c8d;
+            color: var(--text-secondary);
         }
 
         .empty-state::before {
@@ -158,32 +250,40 @@
             margin-bottom: 20px;
         }
 
-        .form-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        /* Form Styles */
+        .form-modal {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
             overflow: hidden;
             display: none;
+            margin-bottom: 30px;
         }
 
-        .form-container.active {
+        .form-modal.active {
             display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .form-header {
-            background: #2a2a2a;
+            background: var(--bg-secondary);
             color: white;
             padding: 20px;
             font-weight: 600;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .form-section {
-            padding: 25px;
-            background-color: #2a2a2a;
-            color: #ffffff;
+        .form-content {
+            padding: 30px;
+            background: var(--bg-secondary);
         }
 
         .form-grid {
@@ -201,295 +301,280 @@
             grid-column: 1 / -1;
         }
 
-        label {
+        .form-label {
             font-weight: 500;
-            margin-bottom: 5px;
-            color: #fcfcfc;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        label.required::after {
+        .form-label.required::after {
             content: " *";
-            color: #e74c3c;
+            color: var(--accent-red);
         }
 
-        input, select, textarea {
+        .form-input, .form-select, .form-textarea {
             padding: 12px;
-            border: 2px solid #e9ecef;
+            border: 2px solid var(--border-color);
             border-radius: 6px;
             font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             transition: border-color 0.3s;
         }
 
-        input:focus, select:focus, textarea:focus {
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
             outline: none;
-            border-color: #3498db;
+            border-color: var(--accent-blue);
         }
 
-        textarea {
+        .form-textarea {
             resize: vertical;
             min-height: 100px;
         }
 
-        .file-upload {
+        /* Communication Block Styles */
+        .communication-block {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
             position: relative;
-            display: inline-block;
+        }
+
+        .communication-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .communication-type {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .communication-selector {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        /* File Upload Styles */
+        .file-upload-zone {
+            position: relative;
+            display: block;
             width: 100%;
         }
 
-        .file-upload input[type="file"] {
+        .file-upload-input {
             position: absolute;
             left: -9999px;
+            opacity: 0;
         }
 
         .file-upload-label {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
-            padding: 12px;
-            border: 2px dashed #dee2e6;
-            border-radius: 6px;
+            padding: 16px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
-            color: #6c757d;
+            color: var(--text-muted);
+            background: var(--bg-primary);
         }
 
         .file-upload-label:hover {
-            border-color: #3498db;
-            color: #3498db;
-        }
-
-        .file-upload-label::before {
-            content: "📎";
-            font-size: 1.2em;
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
         }
 
         .file-list {
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .file-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            margin-bottom: 5px;
+            padding: 10px 14px;
+            background: var(--bg-primary);
+            border-radius: 6px;
+            margin-bottom: 8px;
             font-size: 14px;
         }
 
+        .file-item.existing {
+            opacity: 0.7;
+            border-left: 4px solid var(--accent-green);
+        }
+
         .file-remove {
-            background: #dc3545;
+            background: var(--accent-red);
             color: white;
             border: none;
-            border-radius: 3px;
-            padding: 4px 8px;
+            border-radius: 4px;
+            padding: 6px 10px;
             cursor: pointer;
             font-size: 12px;
         }
 
-        .actions {
+        /* Message Styles */
+        .message {
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Form Actions */
+        .form-actions {
             display: flex;
             gap: 15px;
             justify-content: flex-end;
-            padding: 25px;
-            background: #2a2a2a;
-            border-top: 1px solid #dee2e6;
+            padding: 25px 30px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
         }
 
-        .btn-cancel {
-            background: transparent;
-            color: #6c757d;
-            padding: 12px 24px;
-            border: 2px solid #dee2e6;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .btn-cancel:hover {
-            border-color: #6c757d;
-            color: #495057;
-        }
-
-        .btn-save {
-            background: #28a745;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-save:hover {
-            background: #218838;
-        }
-
-        .btn-save::before {
-            content: "💾";
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 14px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .btn-edit-pieza {
-            background: #ffc107;
-            color: #212529;
-        }
-
-        .btn-edit-pieza:hover {
-            background: #e0a800;
-        }
-
-        .btn-delete-pieza {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-delete-pieza:hover {
-            background: #c82333;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .header {
+            .app-header {
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
-            }
-
-            .header-actions {
-                flex-direction: column;
-                width: 100%;
             }
 
             .form-grid {
                 grid-template-columns: 1fr;
             }
 
-            .actions {
+            .form-actions {
                 flex-direction: column;
             }
 
-            .piezas-table {
-                font-size: 14px;
+            .data-table {
+                font-size: 13px;
             }
 
-            .piezas-table th,
-            .piezas-table td {
-                padding: 10px;
+            .data-table th,
+            .data-table td {
+                padding: 12px 10px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <!-- Header -->
+        <header class="app-header">
             <div class="header-info">
-                <h1>Gestión de Piezas</h1>
-                <p id="campaign-name">Campaña: Cargando...</p>
+                <h1>
+                    Gestión de Piezas 
+                    <span class="version-badge">v6</span>
+                </h1>
+                <p id="campaign-display">Campaña: Cargando...</p>
             </div>
-            <div class="header-actions">
-                <a href="campanas.html" class="btn-secondary">Volver al Dashboard</a>
-                <button class="btn-primary" onclick="mostrarFormulario()">Nueva Pieza</button>
+            <div style="display: flex; gap: 12px;">
+                <a href="campanas.html" class="btn btn-secondary">
+                    ← Volver al Dashboard
+                </a>
+                <button class="btn btn-primary" onclick="PieceManager.showCreateForm()">
+                    + Nueva Pieza
+                </button>
             </div>
-        </div>
+        </header>
 
-        <!-- Lista de Piezas -->
-        <div class="piezas-container">
-            <div class="piezas-header">
+        <!-- Pieces Table -->
+        <div class="data-table-container">
+            <div class="table-header">
                 <span>Piezas de la Campaña</span>
-                <span id="piezas-count">0 piezas</span>
+                <span id="pieces-counter">0 piezas</span>
             </div>
             
-            <div id="empty-state" class="empty-state">
+            <div id="empty-state-display" class="empty-state">
                 <h3>No hay piezas creadas</h3>
                 <p>Comenzá creando la primera pieza para esta campaña</p>
             </div>
 
-            <table id="piezas-table" class="piezas-table" style="display: none;">
+            <table id="pieces-table" class="data-table" style="display: none;">
                 <thead>
                     <tr>
-                        <th>Tipo de Pieza</th>
-                        <th>Asunto</th>
-                        <th>Fecha Creación</th>
+                        <th>Tipo</th>
+                        <th>Asunto Principal</th>
+                        <th>Comunicaciones</th>
                         <th>Archivos</th>
+                        <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="piezas-body">
-                    <!-- Las piezas se cargan dinámicamente aquí -->
+                <tbody id="pieces-tbody">
+                    <!-- Dynamic content -->
                 </tbody>
             </table>
         </div>
 
-        <!-- Formulario de Nueva Pieza -->
-        <div id="form-container" class="form-container">
+        <!-- Form Modal -->
+        <div id="piece-form-modal" class="form-modal">
             <div class="form-header">
-                <span id="form-title">Nueva Pieza</span>
-                <button type="button" onclick="ocultarFormulario()">✕</button>
+                <span id="form-modal-title">Nueva Pieza</span>
+                <button type="button" class="btn btn-danger" onclick="PieceManager.hideForm()" style="padding: 8px 12px;">
+                    ✕
+                </button>
             </div>
 
-            <form id="pieza-form">
-                <div id="error-message" class="error-message"></div>
-                <div id="success-message" class="success-message"></div>
+            <form id="piece-form">
+                <div id="form-error-message" class="message message-error"></div>
+                <div id="form-success-message" class="message message-success"></div>
 
-                <div class="form-section">
+                <div class="form-content">
                     <div class="form-grid">
-                        
                         <div class="form-group full-width" style="text-align: center;">
-                            <label for="campana" class="required">Campaña</label>
-                            <input type="text" id="campana" name="campana" readonly style="text-align: center;">
+                            <label for="campaign-name-input" class="form-label required">Campaña</label>
+                            <input type="text" id="campaign-name-input" name="campana" class="form-input" readonly style="text-align: center; font-weight: 600;">
                         </div>
 
-                        <div class="form-group">
-                            <label for="primer-mensaje-linkedin">Primer mensaje LinkedIn</label>
-                            <textarea id="primer-mensaje-linkedin" name="primerMensajeLinkedin" placeholder="Contenido del primer mensaje de LinkedIn"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="follow-up-linkedin">Segundo mensaje LinkedIn</label>
-                            <textarea id="follow-up-linkedin" name="followUpLinkedin" placeholder="Contenido del follow-up de LinkedIn"></textarea>
-                        </div>
-
-                        <!-- Sección Comunicaciones -->
+                        <!-- Communications Section -->
                         <div class="form-group full-width">
-                            <label for="lhln-selector">Comunicaciones</label>
-                            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
-                                <select id="lhln-selector" style="flex: 1;">
-                                    <option value="">Seleccionar comunicación para agregar</option>
+                            <label class="form-label">Comunicaciones</label>
+                            
+                            <div class="communication-selector">
+                                <select id="communication-type-selector" class="form-select" style="flex: 1;">
+                                    <option value="">Seleccionar tipo de comunicación</option>
+                                    <option value="LinkedIn">LinkedIn</option>
                                     <option value="1er Mail">1er Mail</option>
                                     <option value="2ndo Mail">2ndo Mail</option>
                                     <option value="LHLN1">LHLN1</option>
@@ -505,839 +590,892 @@
                                     <option value="LHLN11">LHLN11</option>
                                     <option value="LHLN12">LHLN12</option>
                                 </select>
-                                <button type="button" onclick="agregarComunicacion()" style="background: #4a9eff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500;">
-                                    Agregar Comunicación
+                                <button type="button" class="btn btn-primary" onclick="CommunicationManager.add()">
+                                    Agregar
                                 </button>
                             </div>
                             
-                            <div id="lhln-comunicaciones">
-                                <!-- Las comunicaciones se agregan aquí dinámicamente -->
+                            <div id="communications-container">
+                                <!-- Dynamic communications -->
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="actions">
-                    <button type="button" class="btn-cancel" onclick="ocultarFormulario()">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar Pieza</button>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="PieceManager.hideForm()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success submit">
+                        💾 Guardar Pieza
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Estado del webhook -->
-    <div id="webhook-status" class="webhook-status"></div>
+    <!-- Status Indicator -->
+    <div id="status-indicator" class="status-indicator"></div>
 
     <script>
-        // Configuración - REEMPLAZA CON TU URL DE N8N
-        const N8N_WEBHOOK_URL = 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-save-pieces';
-        const N8N_FILES_WEBHOOK_URL = 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-save-files';
-        const N8N_LOAD_PIECES_WEBHOOK_URL = 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-load-pieces';
+        // ============================================
+        // CONFIGURATION & GLOBALS
+        // ============================================
         
-        // Variables globales
-        let piezas = [];
-        let campaignId = null;
-        let campaignName = '';
-        let editingPiezaId = null;
-        let comunicacionesLHLN = [];
-        let lhlnCounter = 0;
-
-        // Inicializar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            // Obtener información de la campaña desde URL
-            const urlParams = new URLSearchParams(window.location.search);
-            campaignId = urlParams.get('campaña');
-            campaignName = urlParams.get('nombre') || 'Sin nombre';
-            
-            // Establecer el nombre de la campaña
-            document.getElementById('campaign-name').textContent = `Campaña: ${campaignName}`;
-            document.getElementById('campana').value = campaignName;
-            
-            // Cargar piezas existentes
-            cargarPiezas();
-        });
-
-        // Función para cargar piezas
-        async function cargarPiezas() {
-            try {
-                console.log('Cargando piezas desde webhook...');
-                await cargarPiezasDesdeWebhook();
-                mostrarPiezas();
-            } catch (error) {
-                console.error('Error al cargar piezas:', error);
-                mostrarError('Error al cargar las piezas');
-                // Fallback a datos simulados si falla
-                await simularCargaPiezas();
-                mostrarPiezas();
+        const CONFIG = {
+            webhooks: {
+                savePiece: 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-save-pieces',
+                editPiece: 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-edit-piece',
+                saveFiles: 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-save-files',
+                loadPieces: 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-load-pieces',
+                loadPieceDetails: 'https://n8n.levelupsc.cloud/webhook/7519bb10-678f-4ad0-91ef-00d009bd8a54-load-piece-details'
+            },
+            communicationTypes: {
+                linkedin: 'LinkedIn',
+                email: ['1er Mail', '2ndo Mail'],
+                lhln: ['LHLN1', 'LHLN2', 'LHLN3', 'LHLN4', 'LHLN5', 'LHLN6', 'LHLN7', 'LHLN8', 'LHLN9', 'LHLN10', 'LHLN11', 'LHLN12']
             }
-        }
+        };
 
-        // Función para cargar piezas desde webhook
-        async function cargarPiezasDesdeWebhook() {
-            try {
-                console.log('Solicitando piezas al webhook:', N8N_LOAD_PIECES_WEBHOOK_URL);
+        const STATE = {
+            pieces: [],
+            communications: [],
+            campaignId: null,
+            campaignName: '',
+            editingPieceId: null,
+            communicationCounter: 0
+        };
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        
+        const Utils = {
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('es-AR', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            },
+
+
+            getFileExtension(file) {
+                if (!file?.name) return '';
+                const lastDot = file.name.lastIndexOf('.');
+                return lastDot !== -1 ? file.name.substring(lastDot) : '';
+            },
+
+            sanitizeFileName(text) {
+                if (!text) return 'sin_nombre';
+                return text
+                    .replace(/[^a-zA-Z0-9\u00C0-\u017F\s]/g, '')
+                    .replace(/\s+/g, '_')
+                    .toLowerCase()
+                    .substring(0, 50);
+            },
+
+            isLinkedInCommunication(type) {
+                return type === CONFIG.communicationTypes.linkedin;
+            },
+
+            isEmailCommunication(type) {
+                return CONFIG.communicationTypes.email.includes(type);
+            },
+
+            isLHLNCommunication(type) {
+                return CONFIG.communicationTypes.lhln.includes(type);
+            }
+        };
+
+        // ============================================
+        // API MANAGER
+        // ============================================
+        
+        const ApiManager = {
+            async makeRequest(url, options = {}) {
                 
-                // Enviar información de la campaña al webhook
-                const response = await fetch(N8N_LOAD_PIECES_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        ...options
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error(`API Request failed for ${url}:`, error);
+                    throw error;
+                }
+            },
+
+            async loadPieces() {
+                return this.makeRequest(CONFIG.webhooks.loadPieces, {
                     body: JSON.stringify({
-                        campaignId: campaignId,
-                        campana: campaignName
+                        campaignId: STATE.campaignId,
+                        campana: STATE.campaignName
                     })
                 });
+            },
 
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log('Piezas recibidas del webhook:', data);
-
-                // Verificar si hay piezas en la respuesta
-                if (data && Array.isArray(data)) {
-                    // Los datos llegan directamente como array de piezas
-                    piezas = data.map(pieza => ({
-                        id: pieza.id,
-                        tipoPieza: pieza.type || 'LHLN',
-                        asunto: pieza.asunto || 'Sin asunto',
-                        fechaCreacion: pieza.created ? pieza.created.split('T')[0] : new Date().toISOString().split('T')[0],
-                        archivos: 0, // Los archivos se contarán por separado
-                        comunicacionesLHLN: [] // Se llenará cuando se edite
-                    }));
-                    
-                    console.log(`✅ ${piezas.length} piezas cargadas exitosamente`);
-                } else if (data && data.piezas && Array.isArray(data.piezas)) {
-                    // Formato alternativo si vienen envueltas en objeto
-                    piezas = data.piezas.map(pieza => ({
-                        id: pieza.id,
-                        tipoPieza: pieza.type || 'LHLN',
-                        asunto: pieza.asunto || 'Sin asunto',
-                        fechaCreacion: pieza.created ? pieza.created.split('T')[0] : new Date().toISOString().split('T')[0],
-                        archivos: 0,
-                        comunicacionesLHLN: []
-                    }));
-                    
-                    console.log(`✅ ${piezas.length} piezas cargadas exitosamente`);
-                } else {
-                    console.log('No se encontraron piezas o respuesta vacía');
-                    piezas = [];
-                }
-
-            } catch (error) {
-                console.error('Error al cargar piezas desde webhook:', error);
-                throw error;
-            }
-        }
-
-        // Simular carga de piezas (temporal)
-        function simularCargaPiezas() {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    piezas = [
-                        {
-                            id: 1,
-                            tipoPieza: 'LHLN1',
-                            cliente: 'Cliente ABC',
-                            campana: campaignName,
-                            fechaCreacion: '2025-07-29',
-                            archivos: 2
-                        },
-                        {
-                            id: 2,
-                            tipoPieza: 'LHLN2',
-                            cliente: 'E-commerce XYZ',
-                            campana: campaignName,
-                            fechaCreacion: '2025-07-28',
-                            archivos: 1
-                        }
-                    ];
-                    resolve();
-                }, 500);
-            });
-        }
-
-        // Función para mostrar piezas
-        function mostrarPiezas() {
-            const emptyState = document.getElementById('empty-state');
-            const table = document.getElementById('piezas-table');
-            const tbody = document.getElementById('piezas-body');
-            const countElement = document.getElementById('piezas-count');
-
-            countElement.textContent = `${piezas.length} pieza${piezas.length !== 1 ? 's' : ''}`;
-
-            if (piezas.length === 0) {
-                emptyState.style.display = 'block';
-                table.style.display = 'none';
-                return;
-            }
-
-            emptyState.style.display = 'none';
-            table.style.display = 'table';
-
-            tbody.innerHTML = piezas.map(pieza => `
-                <tr>
-                    <td><strong>${pieza.tipoPieza}</strong></td>
-                    <td>${pieza.asunto || 'Sin asunto'}</td>
-                    <td>${formatearFecha(pieza.fechaCreacion)}</td>
-                    <td>
-                        <span style="background: #e9ecef; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #333;">
-                            ${pieza.archivos} archivos
-                        </span>
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="btn-small btn-edit-pieza" onclick="editarPieza(${pieza.id})">
-                                Editar
-                            </button>
-                            <button class="btn-small btn-delete-pieza" onclick="eliminarPieza(${pieza.id})">
-                                Eliminar
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Función para mostrar el formulario
-        function mostrarFormulario() {
-            editingPiezaId = null;
-            document.getElementById('form-title').textContent = 'Nueva Pieza';
-            document.getElementById('pieza-form').reset();
-            document.getElementById('campana').value = campaignName;
-            comunicacionesLHLN = [];
-            limpiarComunicaciones();
-            document.getElementById('form-container').classList.add('active');
-            window.scrollTo({ top: document.getElementById('form-container').offsetTop - 20, behavior: 'smooth' });
-        }
-
-        // Función para ocultar el formulario
-        function ocultarFormulario() {
-            document.getElementById('form-container').classList.remove('active');
-            limpiarMensajes();
-        }
-
-        // Función para limpiar comunicaciones
-        function limpiarComunicaciones() {
-            document.getElementById('lhln-comunicaciones').innerHTML = '';
-            comunicacionesLHLN = [];
-            lhlnCounter = 0;
-        }
-
-        // Función para agregar comunicación
-        function agregarComunicacion() {
-            const selector = document.getElementById('lhln-selector');
-            const tipoLHLN = selector.value;
-            
-            if (!tipoLHLN) {
-                alert('Por favor, selecciona un tipo de comunicación');
-                return;
-            }
-            
-            // Verificar si ya existe esta comunicación
-            if (comunicacionesLHLN.find(c => c.tipo === tipoLHLN)) {
-                alert('Ya existe una comunicación para este tipo');
-                return;
-            }
-            
-            lhlnCounter++;
-            const comunicacionId = `lhln-${lhlnCounter}`;
-            
-            const comunicacionHtml = `
-                <div class="comunicacion-lhln" id="${comunicacionId}" style="background: #404040; border: 1px solid #555555; padding: 20px; margin-bottom: 15px; border-radius: 4px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #555555; padding-bottom: 10px;">
-                        <span style="font-weight: 600; color: #ffffff; font-size: 14px;">${tipoLHLN}</span>
-                        <button type="button" onclick="eliminarComunicacion('${comunicacionId}', '${tipoLHLN}')" style="background: #666666; color: #cccccc; border: 1px solid #777777; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
-                            Eliminar
-                        </button>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div style="display: flex; flex-direction: column;">
-                            <label style="font-weight: 500; margin-bottom: 8px; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Asunto</label>
-                            <input type="text" name="lhln-asunto-${lhlnCounter}" placeholder="Asunto del email" style="padding: 12px; border: 1px solid #555555; border-radius: 4px; font-size: 14px; background: #2a2a2a; color: #ffffff;">
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column;">
-                            <label style="font-weight: 500; margin-bottom: 8px; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Cuerpo del Mail</label>
-                            <textarea name="lhln-cuerpo-${lhlnCounter}" placeholder="Contenido del email" style="padding: 12px; border: 1px solid #555555; border-radius: 4px; font-size: 14px; background: #2a2a2a; color: #ffffff; min-height: 80px; resize: vertical;"></textarea>
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column;">
-                            <label style="font-weight: 500; margin-bottom: 8px; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Adjuntar Brochure</label>
-                            <div class="file-upload">
-                                <input type="file" id="lhln-brochure-${lhlnCounter}" multiple accept=".pdf,.doc,.docx,.jpg,.png">
-                                <label for="lhln-brochure-${lhlnCounter}" class="file-upload-label" style="background: #2a2a2a; border: 1px dashed #666666; color: #cccccc; padding: 12px; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    + Seleccionar Brochures
-                                </label>
-                            </div>
-                            <div id="lhln-brochure-files-${lhlnCounter}" class="file-list"></div>
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column;">
-                            <label style="font-weight: 500; margin-bottom: 8px; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Adjuntar Flyer</label>
-                            <div class="file-upload">
-                                <input type="file" id="lhln-flyer-${lhlnCounter}" multiple accept=".pdf,.doc,.docx,.jpg,.png">
-                                <label for="lhln-flyer-${lhlnCounter}" class="file-upload-label" style="background: #2a2a2a; border: 1px dashed #666666; color: #cccccc; padding: 12px; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    + Seleccionar Flyers
-                                </label>
-                            </div>
-                            <div id="lhln-flyer-files-${lhlnCounter}" class="file-list"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('lhln-comunicaciones').insertAdjacentHTML('beforeend', comunicacionHtml);
-            
-            // Agregar a la lista de comunicaciones
-            comunicacionesLHLN.push({
-                id: comunicacionId,
-                tipo: tipoLHLN,
-                counter: lhlnCounter,
-                brochureFiles: [],
-                flyerFiles: [],
-                archivos: []
-            });
-            
-            // Configurar manejadores de archivos para esta comunicación
-            configurarManejadoresLHLN(lhlnCounter, tipoLHLN);
-            
-            // Resetear selector
-            selector.value = '';
-        }
-
-        // Función para eliminar comunicación
-        function eliminarComunicacion(comunicacionId, tipoLHLN) {
-            if (confirm(`¿Estás seguro de que querés eliminar la comunicación ${tipoLHLN}?`)) {
-                document.getElementById(comunicacionId).remove();
-                comunicacionesLHLN = comunicacionesLHLN.filter(c => c.id !== comunicacionId);
-            }
-        }
-
-        // Función para configurar manejadores de archivos LHLN
-        function configurarManejadoresLHLN(counter, tipo) {
-            const brochureInput = document.getElementById(`lhln-brochure-${counter}`);
-            const flyerInput = document.getElementById(`lhln-flyer-${counter}`);
-            
-            if (brochureInput) {
-                brochureInput.addEventListener('change', function(e) {
-                    manejarArchivosLHLN(e.target.files, 'brochure', counter);
+            async loadPieceDetails(pieceId) {
+                return this.makeRequest(CONFIG.webhooks.loadPieceDetails, {
+                    body: JSON.stringify({
+                        piezaId: pieceId,
+                        campaignId: STATE.campaignId,
+                        campana: STATE.campaignName
+                    })
                 });
-            }
-            
-            if (flyerInput) {
-                flyerInput.addEventListener('change', function(e) {
-                    manejarArchivosLHLN(e.target.files, 'flyer', counter);
+            },
+
+            async savePiece(pieceData) {
+                return this.makeRequest(CONFIG.webhooks.savePiece, {
+                    body: JSON.stringify({ pieza: pieceData })
                 });
-            }
-        }
+            },
 
-        // Función para manejar archivos LHLN
-        function manejarArchivosLHLN(files, tipo, counter) {
-            const filesArray = Array.from(files);
-            const comunicacion = comunicacionesLHLN.find(c => c.counter === counter);
-            
-            if (comunicacion) {
-                if (tipo === 'brochure') {
-                    comunicacion.brochureFiles = [...comunicacion.brochureFiles, ...filesArray];
-                } else if (tipo === 'flyer') {
-                    comunicacion.flyerFiles = [...comunicacion.flyerFiles, ...filesArray];
-                }
-                
-                actualizarListaArchivosLHLN(counter);
-            }
-        }
+            async editPiece(pieceData) {
+                return this.makeRequest(CONFIG.webhooks.editPiece, {
+                    body: JSON.stringify({ pieza: pieceData })
+                });
+            },
 
-        // Función para actualizar lista de archivos LHLN
-        function actualizarListaArchivosLHLN(counter) {
-            const comunicacion = comunicacionesLHLN.find(c => c.counter === counter);
-            if (!comunicacion) return;
-            
-            // Actualizar brochures
-            const brochureContainer = document.getElementById(`lhln-brochure-files-${counter}`);
-            if (brochureContainer && comunicacion.brochureFiles) {
-                brochureContainer.innerHTML = comunicacion.brochureFiles.map((file, index) => `
-                    <div class="file-item" style="background: #555555; color: #ffffff;">
-                        <span>${file.name}</span>
-                        <button type="button" onclick="eliminarArchivoLHLN('brochure', ${counter}, ${index})" class="file-remove">
-                            ✕
-                        </button>
-                    </div>
-                `).join('');
-            }
-            
-            // Actualizar flyers
-            const flyerContainer = document.getElementById(`lhln-flyer-files-${counter}`);
-            if (flyerContainer && comunicacion.flyerFiles) {
-                flyerContainer.innerHTML = comunicacion.flyerFiles.map((file, index) => `
-                    <div class="file-item" style="background: #555555; color: #ffffff;">
-                        <span>${file.name}</span>
-                        <button type="button" onclick="eliminarArchivoLHLN('flyer', ${counter}, ${index})" class="file-remove">
-                            ✕
-                        </button>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // Función para eliminar archivo LHLN
-        function eliminarArchivoLHLN(tipo, counter, index) {
-            const comunicacion = comunicacionesLHLN.find(c => c.counter === counter);
-            if (!comunicacion) return;
-            
-            if (tipo === 'brochure') {
-                comunicacion.brochureFiles.splice(index, 1);
-            } else if (tipo === 'flyer') {
-                comunicacion.flyerFiles.splice(index, 1);
-            }
-            
-            actualizarListaArchivosLHLN(counter);
-        }
-
-        // Función para manejar el envío del formulario
-        document.getElementById('pieza-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const piezaData = recopilarDatosPieza();
-            await guardarPiezaYEnviarTodas(piezaData);
-        });
-
-        // Función para recopilar datos de la pieza
-        function recopilarDatosPieza() {
-            const formData = new FormData(document.getElementById('pieza-form'));
-            debugger;
-            
-            // Array para almacenar todos los archivos
-            let todosLosArchivos = [];
-            
-            // Recopilar datos de comunicaciones LHLN
-            const comunicacionesData = comunicacionesLHLN.map(comunicacion => {
-                const data = {
-                    tipo: comunicacion.tipo,
-                    brochureFiles: comunicacion.brochureFiles ? comunicacion.brochureFiles.map(f => f.name) : [],
-                    flyerFiles: comunicacion.flyerFiles ? comunicacion.flyerFiles.map(f => f.name) : [],
-                    archivos: comunicacion.archivos ? comunicacion.archivos.map(f => f.name) : []
-                };
-                
-                // Agregar archivos al array principal
-                if (comunicacion.brochureFiles) {
-                    todosLosArchivos = todosLosArchivos.concat(comunicacion.brochureFiles);
-                }
-                if (comunicacion.flyerFiles) {
-                    todosLosArchivos = todosLosArchivos.concat(comunicacion.flyerFiles);
-                }
-                if (comunicacion.archivos) {
-                    todosLosArchivos = todosLosArchivos.concat(comunicacion.archivos);
-                }
-                
-                // Agregar asunto y cuerpo
-                data.asunto = formData.get(`lhln-asunto-${comunicacion.counter}`) || '';
-                data.cuerpo = formData.get(`lhln-cuerpo-${comunicacion.counter}`) || '';
-                
-                return data;
-            });
-            
-            var data = {
-                tipo: "firstLinkedln",
-                cuerpo: formData.get('primerMensajeLinkedin')
-            };
-            comunicacionesData.push(data);
-            var data = {
-                tipo: "secondLinkedln",
-                cuerpo: formData.get('followUpLinkedin')
-            };
-            comunicacionesData.push(data);
-            
-            return {
-                id: editingPiezaId || Date.now(),
-                campana: formData.get('campana'),
-                comunicacionesLHLN: comunicacionesData,
-                archivos: todosLosArchivos, // Incluir todos los archivos
-                fechaCreacion: new Date().toISOString().split('T')[0],
-                campaignId: campaignId
-            };
-        }
-
-        // Función para obtener la extensión de un archivo
-        function obtenerExtensionArchivo(archivo) {
-            if (!archivo || !archivo.name) {
-                console.warn('Archivo o nombre de archivo undefined:', archivo);
-                return '';
-            }
-            const nombre = archivo.name;
-            const ultimoPunto = nombre.lastIndexOf('.');
-            return ultimoPunto !== -1 ? nombre.substring(ultimoPunto) : '';
-        }
-
-        // Función para limpiar texto para usar en nombres de archivo
-        function limpiarTextoParaNombre(texto) {
-            if (!texto) return 'sin_asunto';
-            return texto
-                .replace(/[^a-zA-Z0-9\u00C0-\u017F\s]/g, '') // Remover caracteres especiales excepto letras, números y espacios
-                .replace(/\s+/g, '_') // Reemplazar espacios con guiones bajos
-                .toLowerCase()
-                .substring(0, 50); // Limitar longitud
-        }
-
-        // Función para enviar TODOS los archivos juntos al webhook de archivos
-        async function enviarTodosLosArchivosJuntos(piezaData) {
-            try {
-                console.log('Enviando todos los archivos juntos...');
-                
-                // Crear FormData para todos los archivos
-                const formData = new FormData();
-                
-                // Agregar metadatos básicos de la pieza
-                formData.append('piezaId', piezaData.id);
-                formData.append('campana', piezaData.campana);
-                formData.append('campaignId', piezaData.campaignId);
-                
-                let contadorArchivos = 0;
-                
-                // Enviar directamente todos los archivos del array piezaData.archivos
-                if (piezaData.archivos && piezaData.archivos.length > 0) {
-                    for (const archivo of piezaData.archivos) {
-                        if (archivo && archivo.name) {
-                            const extension = obtenerExtensionArchivo(archivo);
-                            const nuevoNombre = `archivo_${contadorArchivos}${extension}`;
-                            formData.append(`archivo_${contadorArchivos}`, archivo, nuevoNombre);
-                            contadorArchivos++;
-                        }
-                    }
-                }
-                
-                if (contadorArchivos === 0) {
-                    console.log('No hay archivos válidos para enviar');
-                    return;
-                }
-                
-                console.log(`Enviando ${contadorArchivos} archivos juntos al webhook de archivos`);
-                
-                // Enviar todos los archivos juntos
-                const response = await fetch(N8N_FILES_WEBHOOK_URL, {
+            async saveFiles(formData) {
+                const response = await fetch(CONFIG.webhooks.saveFiles, {
                     method: 'POST',
                     body: formData
                 });
-                
-                if (!response.ok) {
-                    throw new Error(`Error al enviar archivos: ${response.status} - ${response.statusText}`);
-                }
-                
-                const resultado = await response.json();
-                console.log(`✅ ${contadorArchivos} archivos enviados exitosamente:`, resultado);
-                
-            } catch (error) {
-                console.error('Error al enviar archivos juntos:', error);
-                throw error;
-            }
-        }
-
-        // Función para enviar archivos por separado al webhook de archivos
-        async function enviarArchivosPorSeparado(piezaData) {
-            try {
-                console.log('Enviando archivos por separado...');
-                
-                // Recorrer comunicaciones para obtener archivos con contexto
-                for (const comunicacion of piezaData.comunicacionesLHLN) {
-                    if (!comunicacion.tipo) continue;
-                    
-                    // Obtener asunto limpio para el nombre del archivo
-                    const asuntoLimpio = limpiarTextoParaNombre(comunicacion.asunto);
-                    
-                    // Enviar brochures
-                    if (comunicacion.brochureFiles && comunicacion.brochureFiles.length > 0) {
-                        for (const archivo of comunicacion.brochureFiles) {
-                            const extension = obtenerExtensionArchivo(archivo);
-                            const nuevoNombre = `${comunicacion.tipo}_brochure_${asuntoLimpio}${extension}`;
-                            await enviarArchivoIndividual(archivo, nuevoNombre, piezaData);
-                        }
-                    }
-                    
-                    // Enviar flyers
-                    if (comunicacion.flyerFiles && comunicacion.flyerFiles.length > 0) {
-                        for (const archivo of comunicacion.flyerFiles) {
-                            const extension = obtenerExtensionArchivo(archivo);
-                            const nuevoNombre = `${comunicacion.tipo}_flyer_${asuntoLimpio}${extension}`;
-                            await enviarArchivoIndividual(archivo, nuevoNombre, piezaData);
-                        }
-                    }
-                    
-                    // Enviar otros archivos si los hay
-                    if (comunicacion.archivos && comunicacion.archivos.length > 0) {
-                        for (const archivo of comunicacion.archivos) {
-                            const extension = obtenerExtensionArchivo(archivo);
-                            const nuevoNombre = `${comunicacion.tipo}_archivo_${asuntoLimpio}${extension}`;
-                            await enviarArchivoIndividual(archivo, nuevoNombre, piezaData);
-                        }
-                    }
-                }
-                
-                console.log('Todos los archivos enviados exitosamente');
-                
-            } catch (error) {
-                console.error('Error al enviar archivos:', error);
-                throw error;
-            }
-        }
-
-        // Función para enviar un archivo individual al webhook de archivos
-        async function enviarArchivoIndividual(archivo, nuevoNombre, piezaData) {
-            const formData = new FormData();
-            
-            // Crear un nuevo archivo con el nombre personalizado
-            const archivoRenombrado = new File([archivo], nuevoNombre, { type: archivo.type });
-            
-            formData.append('archivo', archivoRenombrado);
-            formData.append('metadata', JSON.stringify({
-                piezaId: piezaData.id,
-                campana: piezaData.campana,
-                campaignId: piezaData.campaignId,
-                nombreOriginal: archivo.name,
-                nombreNuevo: nuevoNombre,
-                fechaSubida: new Date().toISOString()
-            }));
-            
-            console.log(`Enviando archivo: ${nuevoNombre}`);
-            
-            const response = await fetch(N8N_FILES_WEBHOOK_URL, {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Error al enviar archivo ${nuevoNombre}: ${response.status} - ${response.statusText}`);
-            }
-            
-            const resultado = await response.json();
-            console.log(`Archivo ${nuevoNombre} enviado exitosamente:`, resultado);
-        }
-
-        // FUNCIÓN PRINCIPAL: Guardar pieza y enviar solo la nueva pieza a N8N
-        async function guardarPiezaYEnviarTodas(piezaData) {
-            try {
-                // Mostrar estado de carga
-                mostrarEstadoWebhook('Guardando pieza y enviando datos...', 'loading');
-                
-                // Preparar los datos adicionales de la pieza
-                const totalArchivos = piezaData.archivos ? piezaData.archivos.length : 0;
-                piezaData.totalArchivos = totalArchivos;
-                piezaData.tipoPieza = obtenerTipoPiezaPrincipal(piezaData.comunicacionesLHLN);
-                
-                // Determinar si es nueva pieza o actualización
-                const esNuevaPieza = !editingPiezaId;
-                
-                // Agregar o actualizar la pieza en la lista local
-                let piezaParaMostrar = {
-                    ...piezaData,
-                    archivos: totalArchivos // Para mostrar en la tabla
-                };
-                
-                if (editingPiezaId) {
-                    // Actualizar pieza existente
-                    const index = piezas.findIndex(p => p.id === editingPiezaId);
-                    if (index !== -1) {
-                        piezas[index] = piezaParaMostrar;
-                    }
-                } else {
-                    // Agregar nueva pieza
-                    piezas.push(piezaParaMostrar);
-                }
-
-                // Preparar datos para enviar SOLO la pieza nueva/modificada a N8N (sin archivos)
-                const dataParaN8N = {
-                    pieza: {
-                        id: piezaData.id,
-                        campana: piezaData.campana,
-                        comunicacionesLHLN: piezaData.comunicacionesLHLN || [],
-                        fechaCreacion: piezaData.fechaCreacion,
-                        campaignId: piezaData.campaignId,
-                        tipoPieza: piezaData.tipoPieza,
-                        totalArchivos: totalArchivos,
-                        esNuevaPieza: esNuevaPieza
-                    }
-                };
-
-                console.log('Enviando pieza nueva/modificada a N8N:', dataParaN8N);
-                console.log('Total de archivos a enviar por separado:', totalArchivos);
-
-                // Enviar datos de la pieza (sin archivos) al webhook principal
-                const response = await fetch(N8N_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(dataParaN8N)
-                });
 
                 if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                    throw new Error(`File upload failed: ${response.status} - ${response.statusText}`);
                 }
 
-                const resultado = await response.json();
-                console.log('Respuesta de N8N:', resultado);
+                return await response.json();
+            }
+        };
+
+        // ============================================
+        // STATUS MANAGER
+        // ============================================
+        
+        const StatusManager = {
+            show(message, type = 'loading') {
+                const indicator = document.getElementById('status-indicator');
+                indicator.textContent = message;
+                indicator.className = `status-indicator status-${type}`;
+                indicator.style.display = 'block';
+
+                if (type !== 'loading') {
+                    setTimeout(() => this.hide(), 5000);
+                }
+            },
+
+            hide() {
+                document.getElementById('status-indicator').style.display = 'none';
+            },
+
+            loading(message) {
+                this.show(message, 'loading');
+            },
+
+            success(message) {
+                this.show(message, 'success');
+            },
+
+            error(message) {
+                this.show(message, 'error');
+            }
+        };
+
+        // ============================================
+        // MESSAGE MANAGER
+        // ============================================
+        
+        const MessageManager = {
+            showError(message) {
+                const errorDiv = document.getElementById('form-error-message');
+                errorDiv.textContent = message;
+                errorDiv.classList.add('show');
+                this.hideSuccess();
+            },
+
+            showSuccess(message) {
+                const successDiv = document.getElementById('form-success-message');
+                successDiv.textContent = message;
+                successDiv.classList.add('show');
+                this.hideError();
+                
+                setTimeout(() => this.hideSuccess(), 5000);
+            },
+
+            hideError() {
+                document.getElementById('form-error-message').classList.remove('show');
+            },
+
+            hideSuccess() {
+                document.getElementById('form-success-message').classList.remove('show');
+            },
+
+            hideAll() {
+                this.hideError();
+                this.hideSuccess();
+            }
+        };
+
+        // ============================================
+        // COMMUNICATION MANAGER
+        // ============================================
+        
+        const CommunicationManager = {
+            add() {
+                const selector = document.getElementById('communication-type-selector');
+                const type = selector.value;
+                
+                if (!type) {
+                    alert('Selecciona un tipo de comunicación');
+                    return;
+                }
+                
+                if (STATE.communications.find(c => c.type === type)) {
+                    alert('Ya existe una comunicación de este tipo');
+                    return;
+                }
+                
+                STATE.communicationCounter++;
+                const id = `comm-${STATE.communicationCounter}`;
+                
+                const communication = {
+                    id,
+                    type,
+                    counter: STATE.communicationCounter,
+                    files: { brochures: [], flyers: [] }
+                };
+                
+                STATE.communications.push(communication);
+                this.render(communication);
+                this.setupEventListeners(communication);
+                
+                selector.value = '';
+            },
+
+            remove(id) {
+                const communication = STATE.communications.find(c => c.id === id);
+                if (!communication) return;
+                
+                if (confirm(`¿Eliminar la comunicación ${communication.type}?`)) {
+                    document.getElementById(id).remove();
+                    STATE.communications = STATE.communications.filter(c => c.id !== id);
+                }
+            },
+
+            clear() {
+                document.getElementById('communications-container').innerHTML = '';
+                STATE.communications = [];
+                STATE.communicationCounter = 0;
+            },
+
+            render(communication) {
+                const container = document.getElementById('communications-container');
+                const html = Utils.isLinkedInCommunication(communication.type) 
+                    ? this.renderLinkedIn(communication)
+                    : this.renderEmail(communication);
+                
+                container.insertAdjacentHTML('beforeend', html);
+            },
+
+            renderLinkedIn(comm) {
+                return `
+                    <div class="communication-block" id="${comm.id}">
+                        <div class="communication-header">
+                            <span class="communication-type">${comm.type}</span>
+                            <button type="button" class="btn btn-danger" onclick="CommunicationManager.remove('${comm.id}')" style="padding: 6px 12px; font-size: 12px;">
+                                Eliminar
+                            </button>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Primer Mensaje</label>
+                                <textarea name="primer-mensaje-${comm.counter}" class="form-textarea" placeholder="Contenido del primer mensaje de LinkedIn"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Follow-up</label>
+                                <textarea name="followup-${comm.counter}" class="form-textarea" placeholder="Contenido del follow-up de LinkedIn"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderEmail(comm) {
+                return `
+                    <div class="communication-block" id="${comm.id}">
+                        <div class="communication-header">
+                            <span class="communication-type">${comm.type}</span>
+                            <button type="button" class="btn btn-danger" onclick="CommunicationManager.remove('${comm.id}')" style="padding: 6px 12px; font-size: 12px;">
+                                Eliminar
+                            </button>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Asunto</label>
+                                <input type="text" name="asunto-${comm.counter}" class="form-input" placeholder="Asunto del email">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Cuerpo del Mail</label>
+                                <textarea name="cuerpo-${comm.counter}" class="form-textarea" placeholder="Contenido del email"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Brochures</label>
+                                <div class="file-upload-zone">
+                                    <input type="file" id="brochures-${comm.counter}" class="file-upload-input" multiple accept=".pdf,.doc,.docx,.jpg,.png">
+                                    <label for="brochures-${comm.counter}" class="file-upload-label">
+                                        📎 Seleccionar Brochures
+                                    </label>
+                                </div>
+                                <div id="brochures-list-${comm.counter}" class="file-list"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Flyers</label>
+                                <div class="file-upload-zone">
+                                    <input type="file" id="flyers-${comm.counter}" class="file-upload-input" multiple accept=".pdf,.doc,.docx,.jpg,.png">
+                                    <label for="flyers-${comm.counter}" class="file-upload-label">
+                                        📎 Seleccionar Flyers
+                                    </label>
+                                </div>
+                                <div id="flyers-list-${comm.counter}" class="file-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            setupEventListeners(communication) {
+                if (Utils.isLinkedInCommunication(communication.type)) return;
+                
+                const brochureInput = document.getElementById(`brochures-${communication.counter}`);
+                const flyerInput = document.getElementById(`flyers-${communication.counter}`);
+                
+                if (brochureInput) {
+                    brochureInput.addEventListener('change', (e) => {
+                        this.handleFileUpload(e.target.files, 'brochures', communication);
+                    });
+                }
+                
+                if (flyerInput) {
+                    flyerInput.addEventListener('change', (e) => {
+                        this.handleFileUpload(e.target.files, 'flyers', communication);
+                    });
+                }
+            },
+
+            handleFileUpload(files, type, communication) {
+                const filesArray = Array.from(files);
+                communication.files[type] = [...communication.files[type], ...filesArray];
+                this.updateFileList(communication.counter, type, communication.files[type]);
+            },
+
+            updateFileList(counter, type, files) {
+                const container = document.getElementById(`${type}-list-${counter}`);
+                if (!container || !files.length) return;
+                
+                container.innerHTML = files.map((file, index) => `
+                    <div class="file-item">
+                        <span>${file.name}</span>
+                        <button type="button" class="file-remove" onclick="CommunicationManager.removeFile('${type}', ${counter}, ${index})">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            },
+
+            removeFile(type, counter, index) {
+                const communication = STATE.communications.find(c => c.counter === counter);
+                if (!communication) return;
+                
+                communication.files[type].splice(index, 1);
+                this.updateFileList(counter, type, communication.files[type]);
+            },
+
+            loadExistingData(communicationData, counter) {
                 debugger;
-                // Verificar archivos disponibles
-                console.log('Verificando archivos para envío:');
-                console.log('piezaData.archivos:', piezaData.archivos);
-                console.log('Total archivos:', piezaData.archivos ? piezaData.archivos.length : 0);
-                
-                // Enviar TODOS los archivos juntos si los hay
-                if (piezaData.archivos && piezaData.archivos.length > 0) {
-                    console.log('Enviando archivos al webhook de archivos...');
-                    await enviarTodosLosArchivosJuntos(piezaData);
+                const communication = STATE.communications.find(c => c.counter === counter);
+                if (!communication) return;
+
+                if (Utils.isLinkedInCommunication(communication.type)) {
+                    const primerMensajeField = document.querySelector(`textarea[name="primer-mensaje-${counter}"]`);
+                    const followupField = document.querySelector(`textarea[name="followup-${counter}"]`);
+                    
+                    if (primerMensajeField && communicationData.primerMensaje) {
+                        primerMensajeField.value = communicationData.primerMensaje;
+                    }
+                    if (followupField && communicationData.followUp) {
+                        followupField.value = communicationData.followUp;
+                    }
                 } else {
-                    console.log('No hay archivos para enviar o array vacío');
+                    const asuntoField = document.querySelector(`input[name="asunto-${counter}"]`);
+                    const cuerpoField = document.querySelector(`textarea[name="cuerpo-${counter}"]`);
+                    
+                    if (asuntoField && communicationData.asunto) {
+                        asuntoField.value = communicationData.asunto;
+                    }
+                    if (cuerpoField && communicationData.cuerpo) {
+                        cuerpoField.value = communicationData.cuerpo;
+                    }
+                    
+                    // Show existing files
+                    if (communicationData.brochureFiles?.length) {
+                        this.showExistingFiles('brochures', counter, communicationData.brochureFiles);
+                    }
+                    if (communicationData.flyerFiles?.length) {
+                        this.showExistingFiles('flyers', counter, communicationData.flyerFiles);
+                    }
+                }
+            },
+
+            showExistingFiles(type, counter, fileNames) {
+                const container = document.getElementById(`${type}-list-${counter}`);
+                if (!container || !fileNames.length) return;
+                
+                const existingHtml = fileNames.map(fileName => `
+                    <div class="file-item existing">
+                        <span>📎 ${fileName} (guardado)</span>
+                        <span style="font-size: 11px; color: var(--accent-green);">EXISTENTE</span>
+                    </div>
+                `).join('');
+                
+                container.innerHTML = existingHtml;
+            },
+
+            collectData() {
+                return STATE.communications.map(comm => {
+                    const data = {
+                        tipo: comm.type,
+                        brochureFiles: comm.files.brochures?.map(f => f.name) || [],
+                        flyerFiles: comm.files.flyers?.map(f => f.name) || []
+                    };
+
+                    if (Utils.isLinkedInCommunication(comm.type)) {
+                        data.primerMensaje = document.querySelector(`textarea[name="primer-mensaje-${comm.counter}"]`)?.value || '';
+                        data.followUp = document.querySelector(`textarea[name="followup-${comm.counter}"]`)?.value || '';
+                    } else {
+                        data.asunto = document.querySelector(`input[name="asunto-${comm.counter}"]`)?.value || '';
+                        data.cuerpo = document.querySelector(`textarea[name="cuerpo-${comm.counter}"]`)?.value || '';
+                    }
+
+                    return data;
+                });
+            },
+
+            getAllFiles() {
+                return STATE.communications.reduce((allFiles, comm) => {
+                    if (!Utils.isLinkedInCommunication(comm.type)) {
+                        return allFiles.concat(comm.files.brochures || [], comm.files.flyers || []);
+                    }
+                    return allFiles;
+                }, []);
+            }
+        };
+
+        // ============================================
+        // PIECE MANAGER
+        // ============================================
+        
+        const PieceManager = {
+            async load() {
+                try {
+                    StatusManager.loading('Cargando piezas...');
+                    
+                    const data = await ApiManager.loadPieces();
+                    
+                    if (Array.isArray(data)) {
+                        STATE.pieces = data.map(piece => ({
+                            id: piece.id,
+                            tipoPieza: piece.type || 'LHLN',
+                            asunto: piece.asunto || 'Sin asunto',
+                            fechaCreacion: piece.created ? piece.created.split('T')[0] : new Date().toISOString().split('T')[0],
+                            archivos: 0,
+                            comunicacionesLHLN: []
+                        }));
+                    } else if (data?.piezas) {
+                        STATE.pieces = data.piezas.map(piece => ({
+                            id: piece.id,
+                            tipoPieza: piece.type || 'LHLN',
+                            asunto: piece.asunto || 'Sin asunto',
+                            fechaCreacion: piece.created ? piece.created.split('T')[0] : new Date().toISOString().split('T')[0],
+                            archivos: 0,
+                            comunicacionesLHLN: []
+                        }));
+                    }
+                    
+                    StatusManager.success(`${STATE.pieces.length} piezas cargadas`);
+                    this.render();
+                    
+                } catch (error) {
+                    console.error('Error loading pieces:', error);
+                    StatusManager.error('Error al cargar las piezas');
+                    this.render();
+                }
+            },
+
+            render() {
+                const emptyState = document.getElementById('empty-state-display');
+                const table = document.getElementById('pieces-table');
+                const tbody = document.getElementById('pieces-tbody');
+                const counter = document.getElementById('pieces-counter');
+
+                counter.textContent = `${STATE.pieces.length} pieza${STATE.pieces.length !== 1 ? 's' : ''}`;
+
+                if (STATE.pieces.length === 0) {
+                    emptyState.style.display = 'block';
+                    table.style.display = 'none';
+                    return;
                 }
 
-                // Mostrar éxito
-                mostrarEstadoWebhook('✅ Datos y archivos enviados exitosamente a N8N', 'success');
-                mostrarExito(esNuevaPieza ? 
-                    `Nueva pieza guardada y enviada a N8N (${totalArchivos} archivos). Total de piezas: ${piezas.length}` :
-                    `Pieza actualizada y enviada a N8N (${totalArchivos} archivos).`
-                );
+                emptyState.style.display = 'none';
+                table.style.display = 'table';
+
+                tbody.innerHTML = STATE.pieces.map(piece => `
+                    <tr>
+                        <td><strong>${piece.tipoPieza}</strong></td>
+                        <td>${piece.asunto}</td>
+                        <td>
+                            <span style="background: var(--accent-blue); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                ${piece.comunicacionesLHLN?.length || 0} comunicaciones
+                            </span>
+                        </td>
+                        <td>
+                            <span style="background: var(--text-secondary); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                ${piece.archivos} archivos
+                            </span>
+                        </td>
+                        <td>${Utils.formatDate(piece.fechaCreacion)}</td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-warning" onclick="PieceManager.edit(${piece.id})">
+                                    Editar
+                                </button>
+                                <button class="btn btn-danger" onclick="PieceManager.delete(${piece.id})">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            showCreateForm() {
+                //STATE.editingPieceId = 2;
+                document.getElementById('form-modal-title').textContent = 'Nueva Pieza';
+                document.getElementById('piece-form').reset();
+                document.getElementById('campaign-name-input').value = STATE.campaignName;
                 
-                // Actualizar la vista
-                mostrarPiezas();
-                ocultarFormulario();
+                CommunicationManager.clear();
+                MessageManager.hideAll();
+                
+                this.resetSubmitButtonListener();
+                
+                document.getElementById('piece-form-modal').classList.add('active');
+                document.getElementById('piece-form-modal').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            },
 
-            } catch (error) {
-                console.error('Error al enviar datos a N8N:', error);
-                mostrarEstadoWebhook('❌ Error al enviar datos a N8N', 'error');
-                mostrarError(`Error al enviar datos: ${error.message}`);
-            }
-        }
+            resetSubmitButtonListener() {
+                const submitButton = document.querySelector('.submit');
+                if (submitButton) {
+                    // Remove existing event listeners by cloning the button
+                    const newSubmitButton = submitButton.cloneNode(true);
+                    submitButton.parentNode.replaceChild(newSubmitButton, submitButton);
+                }
+            },
 
-        // Función para mostrar estado del webhook
-        function mostrarEstadoWebhook(mensaje, tipo) {
-            const statusDiv = document.getElementById('webhook-status');
-            statusDiv.textContent = mensaje;
-            statusDiv.className = `webhook-status ${tipo}`;
-            statusDiv.style.display = 'block';
-
-            if (tipo !== 'loading') {
-                setTimeout(() => {
-                    statusDiv.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        // Función para calcular total de archivos
-        function calcularTotalArchivos(comunicaciones) {
-            let total = 0;
-            comunicaciones.forEach(com => {
-                total += com.brochureFiles ? com.brochureFiles.length : 0;
-                total += com.flyerFiles ? com.flyerFiles.length : 0;
-                total += com.archivos ? com.archivos.length : 0;
-            });
-            return total;
-        }
-
-        // Función para obtener tipo de pieza principal
-        function obtenerTipoPiezaPrincipal(comunicaciones) {
-            if (comunicaciones.length === 0) return 'Sin comunicaciones';
-            
-            // Priorizar LHLN, luego emails, luego archivos
-            const lhln = comunicaciones.find(c => c.tipo.startsWith('LHLN'));
-            if (lhln) return lhln.tipo;
-            
-            const email = comunicaciones.find(c => c.tipo.includes('Mail'));
-            if (email) return email.tipo;
-            
-            return comunicaciones[0].tipo;
-        }
-
-        // Función para editar pieza
-        function editarPieza(id) {
-            const pieza = piezas.find(p => p.id === id);
-            if (!pieza) return;
-            
-            editingPiezaId = id;
-            document.getElementById('form-title').textContent = 'Editar Pieza';
-            
-            // Llenar el formulario con los datos existentes
-            document.getElementById('campana').value = pieza.campana || '';
-            document.getElementById('primer-mensaje-linkedin').value = pieza.primerMensajeLinkedin || '';
-            document.getElementById('follow-up-linkedin').value = pieza.followUpLinkedin || '';
-            
-            // Limpiar y recrear comunicaciones
-            limpiarComunicaciones();
-            
-            // Recrear comunicaciones existentes
-            if (pieza.comunicacionesLHLN && pieza.comunicacionesLHLN.length > 0) {
-                pieza.comunicacionesLHLN.forEach(comunicacion => {
-                    // Simular agregar comunicación
-                    document.getElementById('lhln-selector').value = comunicacion.tipo;
-                    agregarComunicacion();
+            async edit(pieceId) {
+                console.log("[v0] Starting edit for piece ID:", pieceId); // Added debug logging
+                try {
+                    STATE.editingPieceId = pieceId;
+                    console.log("[v0] Set STATE.editingPieceId to:", STATE.editingPieceId); // Added debug logging
+                    document.getElementById('form-modal-title').textContent = 'Editar Pieza';
                     
-                    // Llenar datos
-                    const currentCounter = lhlnCounter;
-                    if (comunicacion.asunto) {
-                        document.querySelector(`input[name="lhln-asunto-${currentCounter}"]`).value = comunicacion.asunto;
+                    this.showCreateForm();
+                    
+                    this.updateSubmitButtonListener();
+                    
+                    StatusManager.loading('Cargando datos de la pieza...');
+                    const pieceDetails = await ApiManager.loadPieceDetails(pieceId);
+                    
+                    await this.fillFormWithDetails(pieceDetails);
+                    StatusManager.success('Datos cargados exitosamente');
+                    
+                } catch (error) {
+                    console.error('Error editing piece:', error);
+                    StatusManager.error('Error al cargar los datos de la pieza');
+                    MessageManager.showError(`Error: ${error.message}`);
+                }
+            },
+
+            updateSubmitButtonListener() {
+                const submitButton = document.querySelector('.submit');
+                if (submitButton) {
+                    // Remove existing event listeners by cloning the button
+                    const newSubmitButton = submitButton.cloneNode(true);
+                    submitButton.parentNode.replaceChild(newSubmitButton, submitButton);
+                    
+                    newSubmitButton.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        console.log("[v0] Edit button clicked, STATE.editingPieceId:", STATE.editingPieceId); // Added debug logging
+                        const pieceData = PieceManager.collectFormData();
+                        console.log("[v0] Collected form data:", pieceData); // Added debug logging
+                        await PieceManager.editPiece(pieceData);
+                    });
+                }
+            },
+
+            async editPiece(pieceData) {
+                try {
+                    console.log("[v0] editPiece called with data:", pieceData); // Added debug logging
+                    console.log("[v0] STATE.editingPieceId:", STATE.editingPieceId); // Added debug logging
+                    
+                    StatusManager.loading('Actualizando pieza...');
+                    
+                    if (!STATE.editingPieceId) {
+                        throw new Error('ID de pieza no encontrado para edición');
                     }
-                    if (comunicacion.cuerpo) {
-                        document.querySelector(`textarea[name="lhln-cuerpo-${currentCounter}"]`).value = comunicacion.cuerpo;
+                    
+                    const totalFiles = CommunicationManager.getAllFiles().length;
+                    const enhancedPieceData = {
+                        ...pieceData,
+                        totalArchivos: totalFiles,
+                        tipoPieza: this.getMainType(pieceData.comunicacionesLHLN),
+                        esNuevaPieza: false,
+                        id: STATE.editingPieceId // Use STATE.editingPieceId directly
+                    };
+
+                    console.log("[v0] Enhanced piece data:", enhancedPieceData); // Added debug logging
+
+                    // Use edit webhook
+                    await ApiManager.editPiece(enhancedPieceData);
+
+                    // Save files if any
+                    const files = CommunicationManager.getAllFiles();
+                    if (files.length > 0) {
+                        await this.saveFiles(enhancedPieceData.id, files);
+                    }
+
+                    // Update local state
+                    this.updateLocalState(enhancedPieceData);
+                    
+                    StatusManager.success('Pieza actualizada exitosamente');
+                    MessageManager.showSuccess(`Pieza actualizada con ${totalFiles} archivos`);
+                    
+                    this.render();
+                    this.hideForm();
+                    
+                } catch (error) {
+                    console.error('Error updating piece:', error);
+                    StatusManager.error('Error al actualizar la pieza');
+                    MessageManager.showError(`Error: ${error.message}`);
+                }
+            },
+
+            async fillFormWithDetails(pieceDetails) {
+                debugger;
+                const communications = pieceDetails;
+                
+                if (!Array.isArray(communications)) {
+                    console.warn('Communications is not an array:', communications);
+                    return;
+                }
+                
+                for (const commData of communications) {
+                    if (!commData.type) continue;
+                    
+                    // Add communication to form
+                    const selector = document.getElementById('communication-type-selector');
+                    selector.value = commData.type;
+                    CommunicationManager.add();
+                    
+                    // Wait for rendering
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                    
+                    // Load data into the new communication
+                    CommunicationManager.loadExistingData(commData, STATE.communicationCounter);
+                }
+            },
+
+            async save(pieceData) {
+                try {
+                    StatusManager.loading('Guardando pieza...');
+                    
+                    const totalFiles = CommunicationManager.getAllFiles().length;
+                    const enhancedPieceData = {
+                        ...pieceData,
+                        totalArchivos: totalFiles,
+                        tipoPieza: this.getMainType(pieceData.comunicacionesLHLN),
+                        esNuevaPieza: !STATE.editingPieceId
+                    };
+
+                    if (STATE.editingPieceId) {
+                        // Editing existing piece - use edit webhook
+                        await ApiManager.editPiece(enhancedPieceData);
+                    } else {
+                        // Creating new piece - use save webhook
+                        await ApiManager.savePiece(enhancedPieceData);
+                    }
+
+                    // Save files if any
+                    const files = CommunicationManager.getAllFiles();
+                    if (files.length > 0) {
+                        await this.saveFiles(pieceData.id, files);
+                    }
+
+                    // Update local state
+                    this.updateLocalState(enhancedPieceData);
+                    
+                    StatusManager.success(`Pieza ${STATE.editingPieceId ? 'actualizada' : 'creada'} exitosamente`);
+                    MessageManager.showSuccess(`Pieza guardada con ${totalFiles} archivos`);
+                    
+                    this.render();
+                    this.hideForm();
+                    
+                } catch (error) {
+                    console.error('Error saving piece:', error);
+                    StatusManager.error('Error al guardar la pieza');
+                    MessageManager.showError(`Error: ${error.message}`);
+                }
+            },
+
+            async saveFiles(pieceId, files) {
+                const formData = new FormData();
+                formData.append('piezaId', pieceId);
+                formData.append('campana', STATE.campaignName);
+                formData.append('campaignId', STATE.campaignId);
+                
+                files.forEach((file, index) => {
+                    if (file?.name) {
+                        const extension = Utils.getFileExtension(file);
+                        const fileName = `archivo_${index}${extension}`;
+                        formData.append(`archivo_${index}`, file, fileName);
                     }
                 });
+                
+                await ApiManager.saveFiles(formData);
+            },
+
+            updateLocalState(pieceData) {
+                const pieceForDisplay = {
+                    ...pieceData,
+                    archivos: pieceData.totalArchivos
+                };
+                
+                if (STATE.editingPieceId) {
+                    const index = STATE.pieces.findIndex(p => p.id === STATE.editingPieceId);
+                    if (index !== -1) {
+                        STATE.pieces[index] = pieceForDisplay;
+                    }
+                } else {
+                    STATE.pieces.push(pieceForDisplay);
+                }
+            },
+
+            getMainType(communications) {
+                if (!communications?.length) return 'Sin comunicaciones';
+                
+                const lhln = communications.find(c => c.tipo.startsWith('LHLN'));
+                if (lhln) return lhln.tipo;
+                
+                const email = communications.find(c => c.tipo.includes('Mail'));
+                if (email) return email.tipo;
+                
+                return communications[0].tipo;
+            },
+
+            delete(pieceId) {
+                const piece = STATE.pieces.find(p => p.id === pieceId);
+                if (!piece) return;
+                
+                if (confirm(`¿Eliminar la pieza "${piece.tipoPieza}"?`)) {
+                    STATE.pieces = STATE.pieces.filter(p => p.id !== pieceId);
+                    this.render();
+                    StatusManager.success('Pieza eliminada');
+                }
+            },
+
+            collectFormData() {
+                const formData = new FormData(document.getElementById('piece-form'));
+                const communications = CommunicationManager.collectData();
+                const files = CommunicationManager.getAllFiles();
+                
+                return {
+                    id: STATE.editingPieceId , // Keep this for new pieces
+                    campana: formData.get('campana'),
+                    comunicacionesLHLN: communications[0],
+                    archivos: files,
+                    fechaCreacion: new Date().toISOString().split('T')[0],
+                    campaignId: STATE.campaignId
+                };
+            },
+
+            hideForm() {
+                document.getElementById('piece-form-modal').classList.remove('active');
+                STATE.editingPieceId = 0;
+                CommunicationManager.clear();
+                MessageManager.hideAll();
             }
-            
-            document.getElementById('form-container').classList.add('active');
-            window.scrollTo({ top: document.getElementById('form-container').offsetTop - 20, behavior: 'smooth' });
-        }
+        };
 
-        // Función para eliminar pieza
-        function eliminarPieza(id) {
-            const pieza = piezas.find(p => p.id === id);
-            if (!pieza) return;
-            
-            if (confirm(`¿Estás seguro de que querés eliminar la pieza "${pieza.tipoPieza}"?`)) {
-                piezas = piezas.filter(p => p.id !== id);
-                mostrarPiezas();
-                mostrarExito('Pieza eliminada exitosamente');
+        // ============================================
+        // APP INITIALIZATION
+        // ============================================
+        
+        const App = {
+            init() {
+                this.loadCampaignInfo();
+                this.setupEventListeners();
+                PieceManager.load();
+            },
+
+            loadCampaignInfo() {
+                const urlParams = new URLSearchParams(window.location.search);
+                STATE.campaignId = urlParams.get('campaña');
+                STATE.campaignName = urlParams.get('nombre') || 'Sin nombre';
+                
+                document.getElementById('campaign-display').textContent = `Campaña: ${STATE.campaignName}`;
+                document.getElementById('campaign-name-input').value = STATE.campaignName;
+            },
+
+            setupEventListeners() {
+                const form = document.getElementById('piece-form');
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const pieceData = PieceManager.collectFormData();
+                    await PieceManager.save(pieceData);
+                });
             }
-        }
+        };
 
-        // Función para formatear fecha
-        function formatearFecha(fecha) {
-            const date = new Date(fecha);
-            return date.toLocaleDateString('es-AR', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
+        // ============================================
+        // START APPLICATION
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+        });
 
-        // Funciones de UI
-        function mostrarError(mensaje) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = mensaje;
-            errorDiv.style.display = 'block';
-            document.getElementById('success-message').style.display = 'none';
-            
-            // Scroll to form
-            window.scrollTo({ top: document.getElementById('form-container').offsetTop - 20, behavior: 'smooth' });
-        }
-
-        function mostrarExito(mensaje) {
-            const successDiv = document.getElementById('success-message');
-            successDiv.textContent = mensaje;
-            successDiv.style.display = 'block';
-            document.getElementById('error-message').style.display = 'none';
-            
-            // Ocultar mensaje después de 5 segundos
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 5000);
-        }
-
-        function limpiarMensajes() {
-            document.getElementById('error-message').style.display = 'none';
-            document.getElementById('success-message').style.display = 'none';
-        }
+        // Make functions globally available
+        window.PieceManager = PieceManager;
+        window.CommunicationManager = CommunicationManager;
     </script>
 </body>
 </html>
